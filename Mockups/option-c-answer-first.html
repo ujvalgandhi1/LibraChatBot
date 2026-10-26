@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Option C — Answer-First · Libra Asset Search mockup</title>
+<link rel="icon" href="libra-logo.png" />
+<script>
+  (() => {
+    const saved = localStorage.getItem('libra-mockup-theme');
+    const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f3f4f8; --panel: #ffffff; --panel-alt: #f8f9fc;
+  --ink: #1b1f2a; --muted: #5b6472; --line: #e3e6ee;
+  --brand: #0b5cab; --brand-ink: #0a4a8a; --accent: #7b5cff;
+  --badge-bg: #eef1fb; --badge-ink: #3a4a7a;
+  --good: #12805c; --warn: #a8620a;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+  --radius: 14px;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1017; --panel: #171a23; --panel-alt: #1c202b;
+  --ink: #e9ecf3; --muted: #9aa4b5; --line: #262b38;
+  --brand: #4c9aff; --brand-ink: #7cb6ff; --accent: #9d86ff;
+  --badge-bg: #1e2436; --badge-ink: #a9b6dd;
+  --good: #3ddca4; --warn: #f0b45e;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); font-size: 14px;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font-family: inherit; }
+
+.ribbon {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 7px 16px; font-size: 12.5px; color: var(--muted);
+  background: repeating-linear-gradient(135deg, rgba(123,92,255,.14) 0 12px, transparent 12px 24px), var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.ribbon strong { color: var(--ink); }
+.ribbon .spacer { margin-left: auto; }
+.ribbon button {
+  font-size: 12.5px; padding: 4px 11px; border-radius: 999px; cursor: pointer;
+  color: var(--brand-ink); background: var(--badge-bg); border: 1px solid var(--line);
+}
+.ribbon button:hover { border-color: var(--brand); }
+
+.topbar { padding: 14px 20px; color: #fff; background: linear-gradient(120deg, var(--brand) 0%, var(--accent) 100%); }
+.topbar-in { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+/* Swap Chatbot/app/public/logo.png to rebrand; height fixed, width follows aspect ratio. */
+.brand-mark {
+  height: 34px; width: auto; max-width: 150px; object-fit: contain; display: block; flex: none;
+  background: #fff; border-radius: 8px; padding: 4px 9px; box-shadow: 0 1px 3px rgb(0 0 0 / .2);
+}
+.brand-fallback {
+  height: 34px; width: 34px; display: none; place-items: center; flex: none;
+  font-weight: 800; font-size: 16px; color: var(--brand);
+  background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgb(0 0 0 / .2);
+}
+.topbar h1 { margin: 0; font-size: 17px; font-weight: 700; }
+.topbar .tagline { margin: 1px 0 0; font-size: 12.5px; opacity: .9; }
+
+.wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
+
+.searchbar { display: flex; gap: 9px; position: relative; }
+.searchbar input {
+  flex: 1; padding: 14px 16px; font-size: 15.5px; color: var(--ink);
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow); outline: none;
+}
+.searchbar input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(11,92,171,.18); }
+.searchbar button {
+  padding: 0 22px; font-size: 15px; font-weight: 600; color: #fff;
+  background: var(--brand); border: none; border-radius: var(--radius); cursor: pointer;
+}
+.searchbar button:disabled { opacity: .55; cursor: not-allowed; }
+
+.chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 13px 2px 0; }
+.chips-label { font-size: 13px; color: var(--muted); }
+.chip {
+  font-size: 13px; color: var(--brand-ink); background: var(--badge-bg);
+  border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.chip:hover { border-color: var(--brand); }
+.chip .n { color: var(--muted); font-size: 11.5px; margin-left: 5px; }
+
+/* ---------- Answer card ---------- */
+.answer {
+  position: relative; margin: 24px 0 0; padding: 20px 22px 16px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.answer::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: linear-gradient(180deg, var(--brand), var(--accent)); }
+.answer-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+.spark { width: 18px; height: 18px; color: var(--accent); flex: none; }
+.answer-head h2 { margin: 0; font-size: 13px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.answer-head .spacer { margin-left: auto; }
+.mini {
+  font-size: 12px; color: var(--muted); background: none; border: 1px solid var(--line);
+  border-radius: 7px; padding: 3px 9px; cursor: pointer;
+}
+.mini:hover { color: var(--ink); border-color: var(--brand); }
+
+.answer-body { font-size: 15px; line-height: 1.68; }
+.answer-body p { margin: 0 0 12px; }
+.answer-body p:last-child { margin-bottom: 0; }
+.answer-body strong { font-weight: 650; }
+.answer-body code {
+  font-family: "Cascadia Code", ui-monospace, Consolas, monospace; font-size: 13.5px;
+  background: var(--badge-bg); border-radius: 4px; padding: 1px 5px;
+}
+/* Citations are the whole point — they must be obviously clickable. */
+.cite {
+  display: inline-block; min-width: 17px; height: 17px; line-height: 15px; margin: 0 1px;
+  font-size: 10.5px; font-weight: 700; text-align: center; vertical-align: 2px; cursor: pointer;
+  color: var(--brand); background: var(--badge-bg);
+  border: 1px solid var(--line); border-radius: 5px; padding: 0 3px;
+}
+.cite:hover, .cite.hot { color: #fff; background: var(--brand); border-color: var(--brand); }
+
+.caret { display: inline-block; width: 7px; height: 15px; vertical-align: -2px; background: var(--accent); animation: blink .9s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.grounding {
+  display: flex; align-items: flex-start; gap: 7px; margin: 14px 0 0; padding-top: 12px;
+  border-top: 1px solid var(--line); font-size: 12px; line-height: 1.5; color: var(--muted);
+}
+.grounding svg { flex: none; margin-top: 1px; }
+
+.trace { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-alt); overflow: hidden; }
+.trace summary { cursor: pointer; padding: 9px 13px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.trace summary:hover { color: var(--ink); }
+.trace-body { padding: 4px 13px 13px; font-size: 12.5px; }
+.step { display: grid; grid-template-columns: 20px 1fr auto; gap: 9px; align-items: baseline; padding: 5px 0; border-top: 1px solid var(--line); }
+.step:first-child { border-top: none; }
+.step-n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.step code { font-family: "Cascadia Code", ui-monospace, Consolas, monospace; font-size: 11.5px; color: var(--muted); }
+.step-ms { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 11.5px; }
+
+.followups { margin: 16px 0 0; }
+.followups-label { font-size: 12.5px; color: var(--muted); display: block; margin-bottom: 8px; }
+.fu {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; cursor: pointer;
+  font-size: 13.5px; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 13px; margin-bottom: 6px;
+}
+.fu:hover { border-color: var(--brand); color: var(--brand-ink); }
+.fu span.arrow { margin-left: auto; color: var(--muted); }
+
+/* ---------- Sources ---------- */
+.srcs-head { display: flex; align-items: baseline; gap: 10px; margin: 30px 2px 12px; }
+.srcs-head h2 { margin: 0; font-size: 14px; font-weight: 700; }
+.srcs-head .sub { font-size: 12.5px; color: var(--muted); }
+.srcs-head .spacer { margin-left: auto; }
+.sortsel { font-size: 12.5px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 4px 8px; cursor: pointer; }
+
+.card {
+  position: relative; display: grid; grid-template-columns: 26px 1fr; gap: 13px;
+  padding: 14px 16px; margin-bottom: 9px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+  scroll-margin-top: 20px;
+}
+.card.hot { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(11,92,171,.16); }
+.cnum {
+  width: 26px; height: 26px; display: grid; place-items: center; flex: none;
+  font-size: 12px; font-weight: 700; color: var(--brand);
+  background: var(--badge-bg); border: 1px solid var(--line); border-radius: 7px;
+}
+.card.hot .cnum { color: #fff; background: var(--brand); border-color: var(--brand); }
+.card-main { min-width: 0; }
+.card-top { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.card-name { font-size: 15px; font-weight: 650; overflow-wrap: anywhere; }
+.tag { font-size: 11px; font-weight: 600; color: var(--badge-ink); background: var(--badge-bg); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.tag.fmt { color: #fff; }
+.card-cap { margin: 6px 0 0; font-size: 13.2px; line-height: 1.5; color: var(--muted); }
+.card-cap em { font-style: normal; background: rgba(123,92,255,.2); border-radius: 3px; padding: 0 2px; color: var(--ink); }
+.card-path {
+  margin: 8px 0 0; font-size: 11.5px; color: var(--muted);
+  font-family: "Cascadia Code", ui-monospace, Consolas, monospace;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.card-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 11px; }
+.match { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; }
+.match .bars { display: flex; gap: 2px; }
+.match .bars i { width: 3px; height: 9px; border-radius: 1px; background: var(--line); }
+.match.strong { color: var(--good); } .match.strong .bars i:nth-child(-n+3) { background: var(--good); }
+.match.good { color: var(--brand); } .match.good .bars i:nth-child(-n+2) { background: var(--brand); }
+.match.fair { color: var(--warn); } .match.fair .bars i:nth-child(-n+1) { background: var(--warn); }
+.card-foot .spacer { margin-left: auto; }
+.lnk { font-size: 13px; font-weight: 600; color: var(--brand); text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; }
+.lnk:hover { text-decoration: underline; }
+.lnk.alt { color: var(--accent); }
+.expand { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13.2px; line-height: 1.6; }
+.expand h4 { margin: 12px 0 5px; font-size: 11.5px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+.expand h4:first-child { margin-top: 0; }
+.expand p { margin: 0 0 9px; }
+.expand ul { margin: 0 0 9px; padding-left: 19px; }
+.expand code { font-family: "Cascadia Code", ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--badge-bg); border-radius: 4px; padding: 1px 5px; }
+
+.skel { height: 13px; border-radius: 4px; background: linear-gradient(90deg, var(--line) 25%, var(--panel-alt) 50%, var(--line) 75%); background-size: 200% 100%; animation: sweep 1.2s linear infinite; margin-bottom: 10px; }
+@keyframes sweep { to { background-position: -200% 0; } }
+
+.rating {
+  display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; margin: 26px 0 0;
+  padding: 13px 16px; font-size: 13px; color: var(--muted);
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.rdot { width: 32px; height: 32px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--brand-ink); background: var(--badge-bg); border: 1px solid var(--line); border-radius: 50%; }
+.rdot:hover { border-color: var(--brand); }
+.rdot.on { color: #fff; background: var(--brand); border-color: var(--brand); }
+
+.empty { margin-top: 30px; padding: 34px 26px; text-align: center; line-height: 1.65; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.empty h3 { margin: 0 0 7px; font-size: 16px; color: var(--ink); }
+.btn { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 9px; text-decoration: none; color: #fff; background: var(--brand); border: 1px solid var(--brand); }
+
+.footer { text-align: center; padding: 18px; color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); }
+
+/* ---------- Design notes ---------- */
+.notes {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 400px; max-width: 92vw; z-index: 40;
+  background: var(--panel); border-left: 1px solid var(--line); box-shadow: var(--shadow);
+  transform: translateX(100%); transition: transform .22s ease; overflow: auto; padding: 20px 22px 40px;
+}
+.notes.open { transform: none; }
+.notes h2 { margin: 0 0 4px; font-size: 16px; }
+.notes .sub { margin: 0 0 16px; font-size: 12.5px; color: var(--muted); }
+.notes ol { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.6; }
+.notes li { margin-bottom: 13px; }
+.notes b { display: block; }
+.notes .cost { display: inline-block; margin-top: 4px; font-size: 11.5px; color: var(--muted); }
+.notes code { font-family: "Cascadia Code", ui-monospace, Consolas, monospace; font-size: 12px; background: var(--badge-bg); border-radius: 4px; padding: 1px 4px; }
+.notes-close { position: absolute; top: 14px; right: 16px; cursor: pointer; background: none; border: none; color: var(--muted); font-size: 19px; }
+.scrim { position: fixed; inset: 0; background: rgba(10,14,22,.42); z-index: 39; opacity: 0; pointer-events: none; transition: opacity .22s ease; }
+.scrim.on { opacity: 1; pointer-events: auto; }
+
+@media (max-width: 620px) {
+  .searchbar { flex-direction: column; }
+  .searchbar button { padding: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="ribbon">
+  <strong>Mockup — Option C: Answer-First</strong>
+  <span>Static prototype. The answer is canned and &ldquo;streams&rdquo; on a timer; no model is called.</span>
+  <span class="spacer"></span>
+  <button id="themeBtn" type="button">Toggle theme</button>
+  <button id="notesBtn" type="button">Design notes</button>
+</div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <img class="brand-mark" id="logo" src="libra-logo.png" alt="Libra" />
+    <div class="brand-fallback" id="logoFallback">L</div>
+    <div>
+      <h1>Libra Asset Search</h1>
+      <p class="tagline">Ask the catalog a question — get an answer, with its sources</p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <form class="searchbar" id="form" role="search">
+    <input id="q" type="text" autocomplete="off" aria-label="Ask the catalog"
+           placeholder="Ask a question, e.g. “where do we track equipment issued to staff?”"
+           value="where do we track equipment issued to staff?" />
+    <button type="submit" id="go">Ask</button>
+  </form>
+
+  <div class="chips" id="chips"></div>
+
+  <div id="out"></div>
+</div>
+
+<footer class="footer">Powered by Azure AI Search + Microsoft Foundry · Private to your network</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="notes" id="notes" aria-hidden="true">
+  <button class="notes-close" id="notesClose" aria-label="Close">&times;</button>
+  <h2>What changes in Option C</h2>
+  <p class="sub">Unlike Option B, this one needs real backend work. Read the cost lines.</p>
+  <ol>
+    <li><b>An answer, not a list.</b>
+      The user's question is answered in prose and the assets become evidence. This is the Perplexity / Glean model and it is what people now expect &ldquo;AI search&rdquo; to look like.
+      <span class="cost">Cost: a chat deployment on <code>hokieopenai</code>. You currently have only <code>text-embedding-3-large</code> — embeddings, no completions.</span></li>
+    <li><b>Every claim is cited.</b>
+      Numbered citations map to the source cards below. Hover one to highlight its card; click to jump. Without this the answer is unauditable and unusable in a governance context.</li>
+    <li><b>It streams.</b>
+      Tokens appear as they are generated, so a 4-second answer feels like a 0.4-second one.
+      <span class="cost">Cost: an SSE endpoint. <code>/api/search</code> is request/response JSON today.</span></li>
+    <li><b>Grounding is stated, not implied.</b>
+      The footer says exactly what the answer was written from — catalog descriptions, not the data itself. This distinction matters enormously and is easy to get wrong.</li>
+    <li><b>Retrieval trace is inspectable.</b>
+      Open it under the answer. Azure AI Search agentic retrieval returns an activity log natively — surfacing it turns &ldquo;why did it say that?&rdquo; into a two-click answer, and is a strong demo moment.</li>
+    <li><b>Follow-ups do the next query for you.</b>
+      Suggested refinements, generated alongside the answer. This is where multi-turn value appears without committing to a full chat UI.</li>
+    <li><b>Cards expand in place.</b>
+      The full <code>userDescription</code> markdown opens under the card. Still no preview pane — that is Option B's contribution, and the two compose.</li>
+    <li><b>Latency is honest.</b>
+      Sources render first, then the answer streams over them. The user is never staring at a spinner.</li>
+    <li><b>Failure mode to design for.</b>
+      Ask <em>xyzzy</em>. When retrieval returns nothing the model must refuse rather than invent an asset. That refusal path needs testing more than the happy path does.</li>
+    <li><b>Ongoing cost.</b>
+      Every search becomes an embedding call plus a completion. At 3 rated searches a day this is negligible; at 3,000 it is a line item. Worth a cache on <code>query_norm</code>, which you already compute.</li>
+  </ol>
+</aside>
+
+<script>
+/* ---------------------------------------------------------------
+   Real asset names, types and qualified names sampled from
+   Chatbot/main_assets.csv. Answers are canned for the mockup.
+----------------------------------------------------------------*/
+const FMT = { csv:'#1f7a4d', json:'#a2681b', parquet:'#5b3fbf', pdf:'#b3352b', docx:'#1f5fa8', table:'#c9432c' };
+
+const ASSETS = {
+  staff_table: {
+    name: 'staff_table', type: 'Databricks table', fmt: 'table', score: 3.42,
+    path: 'hokieadb.adb.staff_table', copies: 3,
+    caption: 'Roster of <em>staff</em> members with assigned <em>equipment</em>, department and location.',
+    desc: [['h','Purpose'],['p','Authoritative roster of staff and the equipment assigned to each. Refreshed nightly from the HR extract and joined to the asset register on <code>employee_id</code>.'],
+           ['h','Notable columns'],['ul',['<code>employee_id</code> — surrogate key, unique','<code>asset_tag</code> — nullable; ~8% of staff have no issued equipment','<code>department</code> — 14 distinct values','<code>location_code</code> — maps to the facilities dimension']],
+           ['h','Caveats'],['p','Contractors are excluded. Rows are not deleted on termination — filter on <code>is_active</code>.']]
+  },
+  AssetInventory: {
+    name: 'AssetInventory.csv', type: 'ADLS Gen2 path', fmt: 'csv', score: 3.18,
+    path: 'hokiedemoadls2/samples/DOE/ANL/Purview/AssetInventory.csv', copies: 1,
+    caption: 'Full <em>inventory</em> of tracked physical <em>equipment</em> — tag, category, custodian, acquisition cost.',
+    desc: [['h','Purpose'],['p','Line-level register of every capitalised asset at the Argonne site. One row per asset tag.'],
+           ['h','Notable columns'],['ul',['<code>asset_tag</code> — primary key, format <code>EQ-#####</code>','<code>custodian_id</code> — joins to <code>staff_table.employee_id</code>','<code>category</code> — 9 values, dominated by IT Equipment']],
+           ['h','Caveats'],['p','Disposed assets remain with <code>status = RETIRED</code> rather than being removed.']]
+  },
+  Facilities: {
+    name: 'DOE_Facilities_Inventory.csv', type: 'ADLS Gen2 path', fmt: 'csv', score: 2.87,
+    path: 'hokiedemoadls2/samples/DOE/Battelle/structured/DOE_Facilities_Inventory.csv', copies: 1,
+    caption: 'Site-level <em>inventory</em> of buildings with gross square footage, ownership and operating status.',
+    desc: [['h','Purpose'],['p','Facilities register covering every building in the estate. Acts as the location dimension for equipment and staff reporting.'],
+           ['h','Notable columns'],['ul',['<code>location_code</code> — joins to <code>staff_table</code> and the asset register','<code>status</code> — OPERATING / STANDBY / DECOMMISSIONED']]]
+  },
+  Software: {
+    name: 'Security_Software_Inventory.json', type: 'ADLS Gen2 path', fmt: 'json', score: 2.44,
+    path: 'hokiedemoadls2/samples/DOE/Hanford/AdvancedHunting/Security_Software_Inventory.json', copies: 1,
+    caption: 'Endpoint software <em>inventory</em> — installed product, version and vulnerability state per device.',
+    desc: [['h','Purpose'],['p','Defender advanced-hunting export listing software installed on each managed endpoint, with CVE exposure where known.'],
+           ['h','Sensitivity'],['p','Contains hostnames and unpatched vulnerability detail. Treat as confidential.']]
+  },
+  Policy: {
+    name: 'Consolidated Global Technology and Equipment Usage P&P - Clean.docx', type: 'ADLS Gen2 path', fmt: 'docx', score: 2.05,
+    path: 'hokiedemoadls2/samples/DOE/Policies/Consolidated Global Technology and Equipment Usage P&P - Clean.docx', copies: 1,
+    caption: 'Policy governing acceptable use, issue and return of <em>equipment</em> and technology assets.',
+    desc: [['h','Purpose'],['p','Consolidated policy covering issue, acceptable use, transfer and return of technology assets. Supersedes the four regional policies withdrawn in 2023.']]
+  },
+  SQLInv: {
+    name: 'SQLInventory.csv', type: 'ADLS Gen2 path', fmt: 'csv', score: 2.29,
+    path: 'hokiedemoadls2/samples/DOE/ANL/Purview/SQLInventory.csv', copies: 1,
+    caption: '<em>Inventory</em> of SQL Server instances and databases with edition, version and patch level.',
+    desc: [['h','Purpose'],['p','Estate-wide register of SQL Server instances, used for licence reconciliation and patch planning.']]
+  }
+};
+
+/* An answer is a token list so it can stream and carry atomic citations. */
+const ANSWERS = {
+  equipment: {
+    sources: ['staff_table','AssetInventory','Facilities','Policy'],
+    text: `Equipment issued to staff is tracked in **two places that are designed to be joined**. |cite:1| holds one row per person with the tag of the equipment they hold, and |cite:2| holds one row per asset with its category, custodian and acquisition date. They join on \`employee_id\` ↔ \`custodian_id\`.
+||
+For anything location-aware, |cite:3| is the dimension both of them point at through \`location_code\` — it carries site, building, square footage and operating status.
+||
+Two caveats worth knowing before you query. Neither table deletes rows: staff persist after termination (filter on \`is_active\`) and disposed equipment persists as \`status = RETIRED\`. And roughly **8% of staff have no asset tag at all**, so an inner join will silently drop them.
+||
+The governing policy for issue and return is |cite:4|, which superseded the four regional policies withdrawn in 2023.`,
+    followups: [
+      'which of these has an assigned data owner?',
+      'show me only the assets updated in the last 90 days',
+      'what joins DOE_Facilities_Inventory to the asset register?'
+    ],
+    trace: [
+      ['Embedded query', 'text-embedding-3-large · 3072 dims', '112 ms'],
+      ['Hybrid retrieval', 'BM25 over name + userDescription, kNN over descriptionVector', '186 ms'],
+      ['Semantic rerank', 'semcfg · 30 candidates scored', '241 ms'],
+      ['Threshold filter', '30 → 6 above SEARCH_MIN_RERANKER_SCORE 1.8', '1 ms'],
+      ['Grouped by name', '6 → 4 results, staff_table merged from 3 locations', '1 ms'],
+      ['Answer synthesis', 'gpt-4o-mini · 4 descriptions in context · 318 output tokens', '2,104 ms']
+    ]
+  },
+  software: {
+    sources: ['Software','SQLInv','Policy'],
+    text: `Software is inventoried at two different layers. |cite:1| is the endpoint view — one record per device per installed product, with vendor, version and a \`VulnerabilitySeverityLevel\` where a CVE is known. |cite:2| is the server-estate view, covering SQL Server instances with edition, version and patch level.
+||
+There is **no single joined view** across the two. Devices are keyed by \`DeviceName\` and instances by \`instance\`, with no shared identifier in the catalog.
+||
+Note that |cite:1| contains hostnames alongside unpatched vulnerability detail and is marked confidential; |cite:3| sets out the handling rules.`,
+    followups: [
+      'which devices have Critical severity findings?',
+      'is there a lineage link between these two datasets?',
+      'who owns Security_Software_Inventory.json?'
+    ],
+    trace: [
+      ['Embedded query', 'text-embedding-3-large · 3072 dims', '104 ms'],
+      ['Hybrid retrieval', 'BM25 + kNN over descriptionVector', '171 ms'],
+      ['Semantic rerank', 'semcfg · 30 candidates scored', '228 ms'],
+      ['Threshold filter', '30 → 3 above SEARCH_MIN_RERANKER_SCORE 1.8', '1 ms'],
+      ['Answer synthesis', 'gpt-4o-mini · 3 descriptions in context · 214 output tokens', '1,760 ms']
+    ]
+  }
+};
+
+const POPULAR = [
+  { text: 'where do we track equipment issued to staff?', n: 41 },
+  { text: 'what do we hold on software and vulnerabilities?', n: 23 },
+  { text: 'facilities square footage by site', n: 19 }
+];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const capHtml = (s) => esc(s).replace(/&lt;em&gt;/g,'<em>').replace(/&lt;\/em&gt;/g,'</em>');
+const band = (s) => s >= 3.0 ? ['strong','Strong match'] : s >= 2.3 ? ['good','Good match'] : ['fair','Fair match'];
+
+const state = { answer: null, rating: null, open: new Set(), timer: null };
+
+function pick(q) {
+  const s = q.toLowerCase();
+  if (/software|vulnerab|patch|cve|endpoint|device/.test(s)) return ANSWERS.software;
+  if (/equip|inventor|staff|asset|facilit|building|custodian/.test(s)) return ANSWERS.equipment;
+  return null;
+}
+
+/* Split prose into atomic tokens so a citation never renders half-formed mid-stream. */
+function tokenize(text) {
+  const out = [];
+  for (const para of text.split('\n||\n')) {
+    const parts = para.split(/(\|cite:\d+\|)/g);
+    const toks = [];
+    for (const p of parts) {
+      const m = /^\|cite:(\d+)\|$/.exec(p);
+      if (m) toks.push({ c: Number(m[1]) });
+      else for (const w of p.split(/(\s+)/)) if (w) toks.push({ t: w });
+    }
+    out.push(toks);
+  }
+  return out;
+}
+function inline(s) {
+  return esc(s)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.+?)`/g, '<code>$1</code>');
+}
+function renderTokens(paras, upto) {
+  let seen = 0, html = '';
+  for (const toks of paras) {
+    let buf = '', p = '';
+    for (const tk of toks) {
+      if (seen >= upto) break;
+      seen++;
+      if (tk.c !== undefined) { p += inline(buf) + `<button class="cite" data-cite="${tk.c}" title="Jump to source ${tk.c}">${tk.c}</button>`; buf = ''; }
+      else buf += tk.t;
+    }
+    p += inline(buf);
+    if (p.trim()) html += `<p>${p}</p>`;
+    if (seen >= upto) break;
+  }
+  return html;
+}
+
+function renderShell(a, q) {
+  const cards = a.sources.map((k, i) => card(ASSETS[k], i + 1)).join('');
+  return `
+  <section class="answer" id="ansCard">
+    <div class="answer-head">
+      <svg class="spark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0l1.6 4.6L14.2 6l-4.6 1.6L8 12l-1.6-4.4L1.8 6l4.6-1.4L8 0zm4.8 8.6l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z"/></svg>
+      <h2>Answer</h2>
+      <span class="spacer"></span>
+      <button class="mini" type="button" id="regen">Regenerate</button>
+      <button class="mini" type="button" id="copy">Copy</button>
+    </div>
+    <div class="answer-body" id="ansBody"></div>
+    <div class="grounding">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.6v4.2" stroke-linecap="round"/><circle cx="8" cy="11.3" r=".8" fill="currentColor" stroke="none"/></svg>
+      <span>Written from <strong>${a.sources.length} catalog descriptions</strong> — not from the data itself. Column-level claims come from the AI-generated asset documentation and should be confirmed against a preview before you rely on them.</span>
+    </div>
+    <details class="trace">
+      <summary>Retrieval trace · ${a.trace.length} steps · ${a.trace.reduce((n, s) => n + parseInt(s[2].replace(/,/g,''), 10), 0).toLocaleString()} ms total</summary>
+      <div class="trace-body">
+        ${a.trace.map((s, i) => `<div class="step"><span class="step-n">${i + 1}</span><span><strong>${esc(s[0])}</strong><br><code>${esc(s[1])}</code></span><span class="step-ms">${esc(s[2])}</span></div>`).join('')}
+      </div>
+    </details>
+    <div class="followups" id="fu" hidden>
+      <span class="followups-label">Follow up</span>
+      ${a.followups.map((f) => `<button class="fu" type="button" data-q="${esc(f)}">${esc(f)}<span class="arrow">→</span></button>`).join('')}
+    </div>
+  </section>
+
+  <div class="srcs-head">
+    <h2>Sources</h2>
+    <span class="sub">${a.sources.length} assets · ranked by semantic relevance</span>
+    <span class="spacer"></span>
+    <select class="sortsel" id="sort" aria-label="Sort sources">
+      <option value="rel">Relevance</option><option value="name">Name (A–Z)</option>
+    </select>
+  </div>
+  <div id="cards">${cards}</div>
+
+  <div class="rating" id="rating"></div>`;
+}
+
+function card(a, n) {
+  const [cls, label] = band(a.score);
+  const open = state.open.has(a.name);
+  return `<article class="card" id="src-${n}" data-card="${n}">
+    <span class="cnum">${n}</span>
+    <div class="card-main">
+      <div class="card-top">
+        <span class="card-name">${esc(a.name)}</span>
+        <span class="tag fmt" style="background:${FMT[a.fmt]}">${a.fmt.toUpperCase()}</span>
+        <span class="tag">${esc(a.type)}</span>
+        ${a.copies > 1 ? `<span class="tag">${a.copies} copies</span>` : ''}
+      </div>
+      <p class="card-cap">${capHtml(a.caption)}</p>
+      <p class="card-path" title="${esc(a.path)}">${esc(a.path)}</p>
+      <div class="card-foot">
+        <span class="match ${cls}" title="Reranker score ${a.score.toFixed(2)} of 4.00"><span class="bars"><i></i><i></i><i></i></span>${label}</span>
+        <button class="lnk" type="button" data-toggle="${esc(a.name)}">${open ? 'Hide details' : 'Full description'}</button>
+        <span class="spacer"></span>
+        <a class="lnk alt" href="#" onclick="return false">Preview ↗</a>
+        <a class="lnk" href="#" onclick="return false">Open in Purview ↗</a>
+      </div>
+      ${open ? `<div class="expand">${a.desc.map(([t, v]) => t === 'h' ? `<h4>${v}</h4>` : t === 'ul' ? `<ul>${v.map((li) => `<li>${li}</li>`).join('')}</ul>` : `<p>${v}</p>`).join('')}</div>` : ''}
+    </div>
+  </article>`;
+}
+
+function renderRating() {
+  const el = $('rating');
+  if (!el) return;
+  el.innerHTML = `<span style="font-weight:600;color:var(--ink)">Was this answer useful?</span>
+    <span style="font-size:12px">1 · lowest</span>
+    ${[1,2,3,4,5].map((v) => `<button class="rdot${state.rating === v ? ' on' : ''}" type="button" data-rate="${v}">${v}</button>`).join('')}
+    <span style="font-size:12px">5 · highest</span>
+    ${state.rating ? '<span style="color:var(--good);font-weight:600">Thanks — recorded against this answer.</span>' : ''}`;
+}
+
+function ask(q) {
+  clearInterval(state.timer);
+  state.rating = null;
+  state.open.clear();
+  history.replaceState(null, '', '#q=' + encodeURIComponent(q));
+
+  const a = pick(q);
+  if (!a) {
+    $('out').innerHTML = `<div class="empty">
+      <h3>Nothing in the catalog answers &ldquo;${esc(q)}&rdquo;</h3>
+      <p>Retrieval returned no asset above the relevance threshold, so no answer was generated.<br>
+      <strong>The model is not asked to guess</strong> — an ungrounded answer is worse than none.</p>
+      <p style="margin-top:18px"><button class="btn" type="button" data-q="${esc(POPULAR[0].text)}">Try a question that works</button></p>
+    </div>`;
+    return;
+  }
+
+  state.answer = a;
+  $('out').innerHTML = renderShell(a, q);
+  renderRating();
+
+  /* Sources are already on screen; the answer streams in over them. */
+  const paras = tokenize(a.text);
+  const total = paras.reduce((n, p) => n + p.length, 0);
+  const body = $('ansBody');
+  body.innerHTML = '<div class="skel" style="width:94%"></div><div class="skel" style="width:100%"></div><div class="skel" style="width:72%"></div>';
+
+  let i = 0;
+  setTimeout(() => {
+    state.timer = setInterval(() => {
+      i += 3;
+      if (i >= total) {
+        clearInterval(state.timer);
+        body.innerHTML = renderTokens(paras, total);
+        $('fu').hidden = false;
+        return;
+      }
+      body.innerHTML = renderTokens(paras, i) + '<span class="caret"></span>';
+    }, 26);
+  }, 520);
+}
+
+function renderChips() {
+  $('chips').innerHTML = '<span class="chips-label">Most common questions:</span>' +
+    POPULAR.map((p) => `<button class="chip" type="button" data-q="${esc(p.text)}">${esc(p.text)}<span class="n">${p.n}</span></button>`).join('');
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-q],[data-cite],[data-toggle],[data-rate],#regen,#copy');
+  if (!t) return;
+  if (t.dataset.q !== undefined) { $('q').value = t.dataset.q; ask(t.dataset.q); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  else if (t.dataset.cite) { $('src-' + t.dataset.cite)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  else if (t.dataset.toggle) {
+    state.open.has(t.dataset.toggle) ? state.open.delete(t.dataset.toggle) : state.open.add(t.dataset.toggle);
+    $('cards').innerHTML = state.answer.sources.map((k, i) => card(ASSETS[k], i + 1)).join('');
+  }
+  else if (t.dataset.rate) { state.rating = Number(t.dataset.rate); renderRating(); }
+  else if (t.id === 'regen') { ask($('q').value); }
+  else if (t.id === 'copy') { t.textContent = 'Copied'; setTimeout(() => { t.textContent = 'Copy'; }, 1400); }
+});
+
+/* Hovering a citation lights up the card it points at, and vice versa. */
+document.addEventListener('mouseover', (e) => {
+  const c = e.target.closest('[data-cite]');
+  document.querySelectorAll('.card.hot').forEach((el) => el.classList.remove('hot'));
+  if (c) $('src-' + c.dataset.cite)?.classList.add('hot');
+});
+document.addEventListener('mouseout', (e) => {
+  if (e.target.closest('[data-cite]')) document.querySelectorAll('.card.hot').forEach((el) => el.classList.remove('hot'));
+});
+
+$('form').addEventListener('submit', (e) => { e.preventDefault(); const v = $('q').value.trim(); if (v) ask(v); });
+document.addEventListener('change', (e) => {
+  if (e.target.id !== 'sort' || !state.answer) return;
+  const keys = state.answer.sources.slice();
+  if (e.target.value === 'name') keys.sort((x, y) => ASSETS[x].name.localeCompare(ASSETS[y].name));
+  $('cards').innerHTML = keys.map((k) => card(ASSETS[k], state.answer.sources.indexOf(k) + 1)).join('');
+});
+
+$('themeBtn').addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('libra-mockup-theme', next);
+});
+$('logo').addEventListener('error', () => {
+  $('logo').style.display = 'none';
+  $('logoFallback').style.display = 'grid';
+});
+function closeNotes() { $('notes').classList.remove('open'); $('scrim').classList.remove('on'); }
+$('notesBtn').addEventListener('click', () => { $('notes').classList.add('open'); $('scrim').classList.add('on'); });
+$('notesClose').addEventListener('click', closeNotes);
+$('scrim').addEventListener('click', closeNotes);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNotes(); });
+
+renderChips();
+const fromUrl = decodeURIComponent((location.hash.match(/q=([^&]*)/) || [])[1] || '');
+if (fromUrl) $('q').value = fromUrl;
+ask($('q').value);
+</script>
+</body>
+</html>

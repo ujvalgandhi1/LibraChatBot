@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Libra Asset Search — UI design options</title>
+<link rel="icon" href="libra-logo.png" />
+<script>
+  (() => {
+    const saved = localStorage.getItem('libra-mockup-theme');
+    const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f3f4f8; --panel: #ffffff; --panel-alt: #f8f9fc;
+  --ink: #1b1f2a; --muted: #5b6472; --line: #e3e6ee;
+  --brand: #0b5cab; --brand-ink: #0a4a8a; --accent: #7b5cff;
+  --badge-bg: #eef1fb; --badge-ink: #3a4a7a;
+  --good: #12805c; --warn: #a8620a; --bad: #b3352b;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+  --radius: 14px;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1017; --panel: #171a23; --panel-alt: #1c202b;
+  --ink: #e9ecf3; --muted: #9aa4b5; --line: #262b38;
+  --brand: #4c9aff; --brand-ink: #7cb6ff; --accent: #9d86ff;
+  --badge-bg: #1e2436; --badge-ink: #a9b6dd;
+  --good: #3ddca4; --warn: #f0b45e; --bad: #ff8a7d;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); font-size: 14.5px; line-height: 1.6;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--brand); }
+button { font-family: inherit; }
+
+.topbar { padding: 26px 20px; color: #fff; background: linear-gradient(120deg, var(--brand) 0%, var(--accent) 100%); }
+.topbar-in { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+/* Swap Chatbot/app/public/logo.png to rebrand; height fixed, width follows aspect ratio. */
+.brand-mark {
+  height: 40px; width: auto; max-width: 170px; object-fit: contain; display: block; flex: none;
+  background: #fff; border-radius: 9px; padding: 5px 10px; box-shadow: 0 1px 3px rgb(0 0 0 / .2);
+}
+.brand-fallback {
+  height: 40px; width: 40px; display: none; place-items: center; flex: none;
+  font-weight: 800; font-size: 19px; color: var(--brand);
+  background: #fff; border-radius: 9px; box-shadow: 0 1px 3px rgb(0 0 0 / .2);
+}
+.topbar h1 { margin: 0; font-size: 21px; font-weight: 700; }
+.topbar p { margin: 2px 0 0; font-size: 13.5px; opacity: .92; }
+.topbar .spacer { margin-left: auto; }
+.ghost {
+  font-size: 13px; padding: 6px 13px; border-radius: 999px; cursor: pointer;
+  color: #fff; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.3);
+}
+.ghost:hover { background: rgba(255,255,255,.28); }
+
+.wrap { max-width: 1040px; margin: 0 auto; padding: 30px 20px 70px; }
+
+.lede { font-size: 16px; max-width: 74ch; margin: 0 0 8px; }
+.sub { color: var(--muted); font-size: 13.5px; max-width: 78ch; margin: 0 0 30px; }
+
+h2.sec { font-size: 13px; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin: 42px 0 14px; }
+h2.sec:first-of-type { margin-top: 0; }
+
+/* ---------- Option cards ---------- */
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 18px; }
+.opt {
+  display: flex; flex-direction: column;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.opt-thumb { padding: 16px; background: var(--panel-alt); border-bottom: 1px solid var(--line); }
+.opt-body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+.opt-tag { font-size: 11px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; color: var(--accent); }
+.opt h3 { margin: 5px 0 8px; font-size: 19px; }
+.opt p.what { margin: 0 0 14px; color: var(--muted); font-size: 13.8px; }
+.opt ul { margin: 0 0 16px; padding-left: 18px; font-size: 13.5px; }
+.opt li { margin-bottom: 5px; }
+.opt .facts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.fact { font-size: 11.5px; font-weight: 600; color: var(--badge-ink); background: var(--badge-bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+.fact.good { color: var(--good); } .fact.warn { color: var(--warn); }
+.opt .go { margin-top: auto; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px; text-decoration: none;
+  font-size: 14px; font-weight: 650; padding: 10px 18px; border-radius: 10px;
+  color: #fff; background: var(--brand); border: 1px solid var(--brand);
+}
+.btn:hover { background: var(--brand-ink); }
+
+/* ---------- CSS wireframe thumbnails ---------- */
+.wf { height: 152px; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--panel); display: flex; flex-direction: column; }
+.wf-bar { height: 16px; flex: none; background: linear-gradient(120deg, var(--brand), var(--accent)); display: flex; align-items: center; gap: 4px; padding: 0 6px; }
+.wf-bar i { display: block; height: 6px; border-radius: 2px; background: rgba(255,255,255,.75); }
+.wf-cols { flex: 1; display: flex; min-height: 0; }
+.wf-rail { width: 44px; flex: none; border-right: 1px solid var(--line); padding: 6px 5px; background: var(--panel-alt); }
+.wf-mid { flex: 1; padding: 6px; min-width: 0; border-right: 1px solid var(--line); }
+.wf-pane { width: 44%; flex: none; padding: 6px; background: var(--panel-alt); }
+.wf-solo { flex: 1; padding: 8px 10px; min-width: 0; overflow: hidden; }
+.ln { height: 5px; border-radius: 2px; background: var(--line); margin-bottom: 5px; }
+.ln.b { background: var(--brand); opacity: .55; }
+.ln.a { background: var(--accent); opacity: .5; }
+.blk { border: 1px solid var(--line); border-radius: 4px; padding: 4px; margin-bottom: 4px; }
+.blk.sel { border-color: var(--brand); background: var(--badge-bg); }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+.grid i { display: block; height: 5px; border-radius: 1px; background: var(--line); }
+.pill { display: inline-block; height: 7px; width: 18px; border-radius: 999px; background: var(--badge-bg); border: 1px solid var(--line); margin-right: 3px; }
+.ansbox { border-left: 2px solid var(--accent); background: var(--badge-bg); border-radius: 3px; padding: 5px 6px; margin-bottom: 6px; }
+.cnum { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--brand); vertical-align: -1px; margin: 0 1px; }
+
+/* ---------- Table ---------- */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.tbl th, .tbl td { text-align: left; padding: 10px 13px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl thead th { font-size: 11.5px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); background: var(--panel-alt); }
+.tbl tbody tr:last-child td { border-bottom: none; }
+.tbl tr.built { background: var(--badge-bg); }
+.tbl td.nm { font-weight: 650; white-space: nowrap; }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.dot.g { background: var(--good); } .dot.w { background: var(--warn); } .dot.r { background: var(--bad); }
+
+/* ---------- Panels ---------- */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; box-shadow: var(--shadow); }
+.panel h3 { margin: 0 0 10px; font-size: 15px; }
+.panel + .panel { margin-top: 14px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 14px; }
+.qs { margin: 0; padding-left: 18px; font-size: 13.8px; }
+.qs li { margin-bottom: 8px; }
+.qs b { display: block; }
+.qs span { color: var(--muted); font-size: 13px; }
+
+.issue { display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; font-size: 13.5px; }
+.issue dt { font-weight: 650; white-space: nowrap; }
+.issue dd { margin: 0; color: var(--muted); }
+
+code { font-family: "Cascadia Code", ui-monospace, Consolas, monospace; font-size: 12.8px; background: var(--badge-bg); border-radius: 4px; padding: 1px 5px; }
+.foot { margin-top: 46px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+
+@media (max-width: 560px) { .opts { grid-template-columns: 1fr; } .wrap { padding: 22px 14px 50px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <img class="brand-mark" id="logo" src="libra-logo.png" alt="Libra" />
+    <div class="brand-fallback" id="logoFallback">L</div>
+    <div>
+      <h1>Libra Asset Search — UI design options</h1>
+      <p>Clickable prototypes for evaluation. Nothing here is wired to the running app.</p>
+    </div>
+    <span class="spacer"></span>
+    <button class="ghost" id="themeBtn" type="button">Toggle theme</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <p class="lede">Two directions are built out below. Both are static HTML with no build step and no network calls — open them, click around, and use the <strong>Design notes</strong> button in the top right of each to see exactly what changed and what it would cost to build.</p>
+  <p class="sub">Asset IDs, names, entity types, collections and qualified names are real, sampled from <code>Chatbot/main_assets.csv</code>. Owner and expert values are illustrative — those columns exist in the real file but are empty on all 904 rows. Table previews are representative placeholders. Both prototypes reuse the brand tokens from <code>app/client/styles.css</code>, so what you are judging is layout and interaction, not colour.</p>
+
+  <h2 class="sec">The two prototypes</h2>
+  <div class="opts">
+
+    <article class="opt">
+      <div class="opt-thumb">
+        <div class="wf" aria-hidden="true">
+          <div class="wf-bar"><i style="width:14px"></i><i style="width:52px"></i><i style="width:20px;margin-left:auto"></i></div>
+          <div class="wf-cols">
+            <div class="wf-rail">
+              <div class="ln" style="width:60%"></div>
+              <div class="ln"></div><div class="ln b"></div><div class="ln"></div>
+              <div class="ln" style="width:60%;margin-top:9px"></div>
+              <div class="ln"></div><div class="ln"></div>
+            </div>
+            <div class="wf-mid">
+              <div class="blk"><div class="ln b" style="width:64%"></div><div class="ln"></div></div>
+              <div class="blk sel"><div class="ln b" style="width:52%"></div><div class="ln"></div></div>
+              <div class="blk"><div class="ln b" style="width:70%"></div><div class="ln"></div></div>
+              <div class="blk"><div class="ln b" style="width:46%"></div><div class="ln"></div></div>
+            </div>
+            <div class="wf-pane">
+              <div class="ln b" style="width:66%"></div>
+              <div style="margin:6px 0"><span class="pill"></span><span class="pill"></span></div>
+              <div class="grid">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="opt-body">
+        <span class="opt-tag">Option B</span>
+        <h3>Discovery Workbench</h3>
+        <p class="what">Faceted rail, result list, and a persistent preview pane. Every facet reads a column that exists in <code>main_assets.csv</code> today.</p>
+        <ul>
+          <li>Preview never destroys your query — compare candidates in seconds</li>
+          <li>Facets on <code>collectionName</code>, <code>asset_type_friendly</code>, <code>asset_entity_type</code></li>
+          <li><strong>Stewardship gap facets</strong> from <code>owner</code> / <code>expert</code> — find what has neither</li>
+          <li><strong>Bulk export</strong> — pick scope and columns, download real CSV</li>
+          <li>Every dimension is <strong>1:1 at asset grain</strong> — nothing fans the row count out</li>
+          <li>Keyboard driven — <code>↑</code> <code>↓</code> <code>Enter</code> <code>Esc</code> <code>Ctrl K</code></li>
+        </ul>
+        <div class="facts">
+          <span class="fact good">Runs on your current 12 columns</span>
+          <span class="fact warn">owner / expert not yet populated</span>
+          <span class="fact warn">Full export needs an endpoint</span>
+          <span class="fact good">No grain change</span>
+        </div>
+        <div class="go"><a class="btn" href="option-b-workbench.html">Open Option B &rarr;</a></div>
+      </div>
+    </article>
+
+    <article class="opt">
+      <div class="opt-thumb">
+        <div class="wf" aria-hidden="true">
+          <div class="wf-bar"><i style="width:14px"></i><i style="width:52px"></i></div>
+          <div class="wf-cols">
+            <div class="wf-solo">
+              <div class="ln" style="width:100%;height:9px;margin-bottom:7px"></div>
+              <div class="ansbox">
+                <div class="ln" style="width:96%"></div>
+                <div class="ln" style="width:88%"></div>
+                <div class="ln" style="width:60%;display:inline-block"></div><span class="cnum"></span><span class="cnum"></span>
+              </div>
+              <div style="display:flex;gap:6px;margin-bottom:6px">
+                <div class="blk" style="flex:1;margin:0"><div class="ln a" style="width:70%"></div></div>
+                <div class="blk" style="flex:1;margin:0"><div class="ln a" style="width:56%"></div></div>
+              </div>
+              <div class="blk" style="display:flex;gap:5px;align-items:flex-start">
+                <span style="width:8px;height:8px;border-radius:2px;background:var(--brand);flex:none;margin-top:1px"></span>
+                <span style="flex:1"><span class="ln b" style="width:58%;display:block"></span><span class="ln" style="width:90%;display:block"></span></span>
+              </div>
+              <div class="blk" style="display:flex;gap:5px;align-items:flex-start">
+                <span style="width:8px;height:8px;border-radius:2px;background:var(--brand);flex:none;margin-top:1px"></span>
+                <span style="flex:1"><span class="ln b" style="width:48%;display:block"></span><span class="ln" style="width:82%;display:block"></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="opt-body">
+        <span class="opt-tag">Option C</span>
+        <h3>Answer-First</h3>
+        <p class="what">The question gets answered in prose with numbered citations; the assets become the evidence underneath. Streams token-by-token, with the retrieval trace open to inspection.</p>
+        <ul>
+          <li>Synthesised answer with clickable, hover-linked citations</li>
+          <li>Grounding stated explicitly — descriptions, not the data itself</li>
+          <li>Retrieval trace showing every step and its latency</li>
+          <li>Suggested follow-ups instead of a blank second search</li>
+          <li>Refuses to answer when retrieval comes back empty</li>
+        </ul>
+        <div class="facts">
+          <span class="fact warn">Needs a chat deployment</span>
+          <span class="fact warn">Needs SSE streaming</span>
+          <span class="fact">Per-search token cost</span>
+          <span class="fact">Highest demo impact</span>
+        </div>
+        <div class="go"><a class="btn" href="option-c-answer-first.html">Open Option C &rarr;</a></div>
+      </div>
+    </article>
+
+  </div>
+
+  <h2 class="sec">They compose</h2>
+  <div class="panel">
+    <p style="margin:0">B and C are not either/or. A workbench with a synthesised answer sitting above the result list is the Glean model, and neither forecloses a full conversational UI later. <strong>B first</strong> — it needs no backend change, so it is reversible. <strong>C second</strong>, once there is a chat deployment on <code>hokieopenai</code>; today that account has only <code>text-embedding-3-large</code>.</p>
+  </div>
+
+  <h2 class="sec">All five directions considered</h2>
+  <table class="tbl">
+    <thead>
+      <tr><th>Direction</th><th>Effort</th><th>Backend work</th><th>Demo impact</th><th>Daily utility</th><th>Risk</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="nm">A · Refined Catalog</td>
+        <td>S</td><td><span class="dot g"></span>None</td><td>Medium</td><td>Medium</td><td><span class="dot g"></span>Low</td>
+      </tr>
+      <tr class="built">
+        <td class="nm">B · Discovery Workbench <span class="fact">prototyped</span></td>
+        <td>M</td><td><span class="dot g"></span>None</td><td>High</td><td><strong>Highest</strong></td><td><span class="dot g"></span>Low–Med</td>
+      </tr>
+      <tr class="built">
+        <td class="nm">C · Answer-First <span class="fact">prototyped</span></td>
+        <td>M–L</td><td><span class="dot w"></span>Chat deployment + SSE</td><td><strong>Highest</strong></td><td>High</td><td><span class="dot w"></span>Medium</td>
+      </tr>
+      <tr>
+        <td class="nm">D · Conversational agent</td>
+        <td>L</td><td><span class="dot r"></span>Chat + state + agentic retrieval</td><td>Very high</td><td>Medium</td><td><span class="dot r"></span>High</td>
+      </tr>
+      <tr>
+        <td class="nm">E · Command palette</td>
+        <td>M</td><td><span class="dot w"></span>Debounce + query cache</td><td>Medium</td><td>High</td><td><span class="dot w"></span>Medium</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="sub" style="margin-top:12px">A is folded into both prototypes rather than built separately — it is the craft layer, not a distinct destination. D is worth revisiting only if there is evidence people want to refine across turns; with ~900 assets most questions resolve in one shot, and chat would add friction over a good search box.</p>
+
+  <h2 class="sec">What both prototypes are fixing</h2>
+  <div class="panel">
+    <dl class="issue">
+      <dt>Preview loses your work</dt>
+      <dd><code>#/view</code>, <code>#/table</code> and <code>#/image</code> take over the entire window in a new tab. You abandon your results to look at one file.</dd>
+      <dt>No way to narrow</dt>
+      <dd>15 results arrive with <code>assetEntityType</code> on every one of them, and it does nothing beyond a grey pill.</dd>
+      <dt>The best content is hidden</dt>
+      <dd><code>userDescription</code> is a full AI-written document per asset. Only a one-line extractive caption ever reaches the screen.</dd>
+      <dt>Relevance is meaningless</dt>
+      <dd><code>relevance 2.43</code> on an unlabelled 0–4 reranker scale tells a user nothing.</dd>
+      <dt>Rating comes too early</dt>
+      <dd><code>RatingBar</code> renders above the results, asking for a verdict before anything is on screen.</dd>
+      <dt>Cards are type-blind</dt>
+      <dd>A PDF, a Cosmos container and a Databricks table render identically.</dd>
+      <dt>Nothing is shareable</dt>
+      <dd>The query never reaches the URL, so a search cannot be bookmarked or sent to a colleague.</dd>
+      <dt>Zero results is a dead end</dt>
+      <dd>&ldquo;Try rephrasing&rdquo; with no relaxed retry and no suggestions.</dd>
+    </dl>
+  </div>
+
+  <h2 class="sec">Current state of <code>Chatbot/main_assets.csv</code></h2>
+  <div class="panel">
+    <p style="margin:0 0 14px">904 rows, 904 distinct <code>asset_id</code>, <strong>12 columns</strong> as of 27 Aug 15:56. Grain is intact. Four columns have been added beyond the original eight:</p>
+    <table class="tbl">
+      <thead><tr><th>Column</th><th>Coverage</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="nm">collectionName</td>
+          <td>904 of 904, zero blanks<br><span style="color:var(--muted)">StorageAccounts 738 · Databricks 120 · RelationalDatabases 31 · NoSQL 11 · Root 4</span></td>
+          <td><span class="dot g"></span>Working — drives the Collection facet</td>
+        </tr>
+        <tr>
+          <td class="nm">asset_type_friendly</td>
+          <td>904 of 904, zero blanks<br><span style="color:var(--muted)">ADLS 739 · Databricks 121 · Azure SQL 21 · Azure Synapse 10 · Cosmos 8 · ADX 3 · ADF 2</span></td>
+          <td><span class="dot w"></span>Working, but it is a <em>platform</em> grouping — see below</td>
+        </tr>
+        <tr>
+          <td class="nm">owner</td>
+          <td><strong>0 of 904</strong></td>
+          <td><span class="dot r"></span>Column exists, never populated</td>
+        </tr>
+        <tr>
+          <td class="nm">expert</td>
+          <td><strong>0 of 904</strong></td>
+          <td><span class="dot r"></span>Column exists, never populated</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="sub" style="margin:14px 0 0"><strong>The blocker:</strong> <code>owner</code> and <code>expert</code> are empty on every row, so all Stewardship facets read &ldquo;No owner: 904&rdquo;. The values are in <code>Reporting/csv_exports/main_assets.csv</code> as <code>contact_owner_id</code> / <code>contact_expert_id</code> — 4 assets have an owner, 5 have an expert, across just <strong>4 distinct Entra object IDs</strong>. Resolve those four through Graph and hardcode the map.</p>
+    <p class="sub" style="margin:10px 0 0"><strong>Correction to earlier advice:</strong> you do <em>not</em> need <code>owner_count</code> / <code>expert_count</code> columns. That guidance assumed delimited multi-value strings. With plain scalars, <code>owner eq ''</code> is directly filterable in Azure AI Search, so the two columns you have are sufficient.</p>
+    <p class="sub" style="margin:10px 0 0"><strong>Worth a decision:</strong> <code>asset_type_friendly</code> collapses five Databricks/Hive entity types into one &ldquo;Databricks&rdquo; bucket, so a user cannot separate a view from a table. The prototype keeps <code>asset_entity_type</code> as a second, finer facet alongside it — costs nothing and restores the distinction.</p>
+  </div>
+
+  <h2 class="sec">Deferred by choice</h2>
+  <div class="panel">
+    <p style="margin:0 0 14px">Classifications and managed attributes are not in the file and not on the screen. When you want them, only two are safe at asset grain — the rest fan the 904-row grain out:</p>
+    <table class="tbl">
+      <thead><tr><th>Dimension</th><th>Grain</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">DataClassification.DataClassification</td><td><span class="dot g"></span>1:1 · 90 assets</td><td>Safe. The best governance facet available.</td></tr>
+        <tr><td class="nm">classification_source</td><td><span class="dot g"></span>1:1 · 19 assets</td><td>Safe. <code>DataScan</code> vs <code>PurviewPortal</code>.</td></tr>
+        <tr><td class="nm">tag</td><td><span class="dot r"></span>11 of 11 assets multi · max 3</td><td>Every tagged asset has more than one.</td></tr>
+        <tr><td class="nm">DataClassification.DocumentLevel</td><td><span class="dot r"></span>2 of 10 multi · max 4</td><td>One asset holds Internal, Confidential <em>and</em> Restricted.</td></tr>
+        <tr><td class="nm">classification_typename</td><td><span class="dot w"></span>4 of 76 multi · max 2</td><td>e.g. <code>DCAT1</code> + <code>MICROSOFT.POWERBI.ENDORSEMENT</code>.</td></tr>
+        <tr><td class="nm">contact_expert_id</td><td><span class="dot w"></span>1 of 5 multi · max 2</td><td><code>NFLPlayByPlayData</code> has two. Decide first-value vs collection field.</td></tr>
+      </tbody>
+    </table>
+    <p class="sub" style="margin:14px 0 0"><strong>Why not just semicolon-join the 1:N ones?</strong> Because <code>"DCAT1; MICROSOFT.POWERBI.ENDORSEMENT"</code> is a single facet value, not two. You get one bucket per <em>combination</em>, facet counts stop summing to the result total, and a user cannot tell whether a filter means &ldquo;has this&rdquo; or &ldquo;has exactly this set&rdquo;. Model them as <code>Collection(Edm.String)</code> in the index instead.</p>
+    <p class="sub" style="margin:10px 0 0"><strong>Index side, when you are ready:</strong> add fields as <code>filterable</code> + <code>facetable</code> in <code>scripts/create-index.ps1</code>, and map them in <strong>both</strong> places in <code>scripts/ingest.ps1</code> — the <code>$prepared</code> object and the <code>Flush-EmbedBatch</code> hashtable. Miss one and the column drops silently. Adding <em>new</em> fields is additive; changing an existing field (making <code>collectionId</code> facetable) forces a full rebuild, so add <code>collectionName</code> as a new field instead.</p>
+  </div>
+
+  <h2 class="sec">How to evaluate</h2>
+  <div class="two">
+    <div class="panel">
+      <h3>Try these in Option B</h3>
+      <ol class="qs">
+        <li><b>Filter Stewardship → No owner or expert.</b><span>Purview cannot do this. Is a remediation worklist worth populating the columns?</span></li>
+        <li><b>Then hit Export.</b><span>Scope, columns, real CSV. Is this the hand-off your stewards need?</span></li>
+        <li><b>Compare Platform against Entity type.</b><span><code>asset_type_friendly</code> merges Hive views into Databricks. Do you need both facets?</span></li>
+        <li><b>Select <code>staff_table</code>, open Stewardship then Locations.</b><span>Right amount of metadata, or too much?</span></li>
+        <li><b>Sort by Least governed first.</b><span>Useful default for a stewardship review?</span></li>
+        <li><b>Search <code>xyzzy</code>.</b><span>Is the relaxed retry the right recovery?</span></li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>Try these in Option C</h3>
+      <ol class="qs">
+        <li><b>Watch the answer stream.</b><span>Does the wait feel shorter than a spinner would?</span></li>
+        <li><b>Hover a citation.</b><span>Is the link between claim and source convincing enough to trust?</span></li>
+        <li><b>Open the retrieval trace.</b><span>Is this a governance asset or noise for your audience?</span></li>
+        <li><b>Read the grounding footer.</b><span>Descriptions, not data. Is that distinction clear enough?</span></li>
+        <li><b>Ask <code>xyzzy</code>.</b><span>Refusing beats inventing — but is the wording right?</span></li>
+        <li><b>Click a follow-up.</b><span>Is this enough multi-turn value to avoid building full chat?</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <h2 class="sec">One decision to make before any build</h2>
+  <div class="panel">
+    <h3>Design system</h3>
+    <p style="margin:0 0 10px">The app hand-rolls ~460 lines of CSS today, and both prototypes continue that. Worth settling before committing, because it is expensive to reverse:</p>
+    <ul style="margin:0;padding-left:19px;font-size:13.8px">
+      <li><strong>Keep hand-rolled CSS</strong> — smallest bundle, total control, accessibility is on you.</li>
+      <li><strong>Fluent UI v9</strong> — reads as first-party Microsoft, which suits a Purview accelerator, and gives accessible components free. Costs bundle size and some of the current lightness.</li>
+      <li><strong>Radix + Tailwind</strong> — maximum control with accessible primitives; a larger authoring shift.</li>
+      <li><strong>Mantine</strong> — fastest to a polished result, least distinctive.</li>
+    </ul>
+  </div>
+
+  <p class="foot">
+    Prototypes: <a href="option-b-workbench.html">option-b-workbench.html</a> · <a href="option-c-answer-first.html">option-c-answer-first.html</a><br>
+    No build step, no network calls, no dependencies. Share the <strong>whole folder</strong> — the pages load <code>libra-logo.png</code> alongside them, and fall back to a plain badge if it is missing.
+  </p>
+</div>
+
+<script>
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('libra-mockup-theme', next);
+});
+document.getElementById('logo').addEventListener('error', () => {
+  document.getElementById('logo').style.display = 'none';
+  document.getElementById('logoFallback').style.display = 'grid';
+});
+</script>
+</body>
+</html>

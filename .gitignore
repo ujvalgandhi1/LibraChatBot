@@ -1,0 +1,21 @@
+# Generated dependencies, builds, and index data.
+node_modules/
+dist/
+out/
+__pycache__/
+*.py[cod]
+*.log
+*.zip
+.DS_Store
+
+# Local catalog exports and deployment state.
+main_assets.csv
+infra/deployment.json
+
+# Local credentials.
+.env
+.env.*
+*.pem
+*.pfx
+*.p12
+*.key

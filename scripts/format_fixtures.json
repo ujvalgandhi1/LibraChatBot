@@ -1,0 +1,46 @@
+{
+  "_comment": [
+    "Shared contract fixtures for the format derivation.",
+    "",
+    "formatOf() in app/client/lib/asset-format.js and format_of() in scripts/to-jsonl.py",
+    "compute the SAME value from a qualifiedName. The client renders it as the badge on a",
+    "result row; the Python converter writes it into the indexed 'format' field that drives",
+    "the facet. If the two drift, a row can show one format while being counted under",
+    "another.",
+    "",
+    "Both sides are asserted against this file:",
+    "  app/client/test/format.test.js   (node --test)",
+    "  scripts/test_to_jsonl.py         (python -m unittest)",
+    "",
+    "Add a case here whenever you change either implementation."
+  ],
+  "cases": [
+    { "qualifiedName": "https://acct.documents.azure.com/dbs/mydb/colls/orders", "format": "container", "why": "cosmos container" },
+    { "qualifiedName": "https://acct.documents.azure.com/dbs/mydb/colls/orders/", "format": "container", "why": "cosmos, trailing slash" },
+    { "qualifiedName": "https://clu.eastus2.kusto.windows.net/mydb/Events", "format": "kusto", "why": "adx table" },
+    { "qualifiedName": "https://clu.kusto.azuresynapse.net/mydb/Events", "format": "kusto", "why": "adx on synapse" },
+    { "qualifiedName": "mssql://srv.database.windows.net/db/dbo/Customers", "format": "sql", "why": "azure sql table" },
+    { "qualifiedName": "mssql://srv.sql.azuresynapse.net/db/dbo/Customers", "format": "sql", "why": "synapse sql table" },
+    { "qualifiedName": "databricks://meta-guid/catalogs/main/schemas/sales/tables/orders", "format": "table", "why": "unity catalog" },
+    { "qualifiedName": "sales.orders@adb-123456.7.azuredatabricks.net", "format": "table", "why": "hive metastore" },
+
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/report.pdf", "format": "pdf", "why": "extension wins for storage" },
+    { "qualifiedName": "https://acct.blob.core.windows.net/bronze/data.csv", "format": "csv", "why": "blob endpoint" },
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/data.parquet", "format": "parquet", "why": "parquet" },
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/photo.JPEG", "format": "jpeg", "why": "extension lowercased" },
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/report.v2.final.xlsx", "format": "xlsx", "why": "last dotted segment wins" },
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/archive.tar.gz", "format": "gz", "why": "compound extension takes the last part" },
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/file.pdf?sig=abc", "format": "pdf", "why": "query string ignored" },
+
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/README", "format": "file", "why": "no extension" },
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/", "format": "file", "why": "directory" },
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/name.verylongext", "format": "file", "why": "extension over 8 chars is not an extension" },
+    { "qualifiedName": "https://acct.dfs.core.windows.net/bronze/report.tar.verylongext", "format": "file", "why": "no qualifying extension anywhere" },
+    { "qualifiedName": "", "format": "file", "why": "empty" },
+    { "qualifiedName": "not a qualified name", "format": "file", "why": "unparseable" },
+
+    { "qualifiedName": "https://acct.documents.azure.com/dbs/mydb/colls/orders/extra", "format": "file", "why": "too deep to be a cosmos container" },
+    { "qualifiedName": "https://clu.eastus2.kusto.windows.net/mydb", "format": "file", "why": "adx needs db AND table" },
+    { "qualifiedName": "sales.orders@adb-123456.7.azuredatabricks.net.evil.com", "format": "com", "why": "lookalike host is not databricks; falls through to extension" }
+  ]
+}

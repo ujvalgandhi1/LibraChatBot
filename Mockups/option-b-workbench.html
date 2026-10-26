@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Option B — Discovery Workbench · Libra Asset Search mockup</title>
+<link rel="icon" href="libra-logo.png" />
+<script>
+  (() => {
+    const saved = localStorage.getItem('libra-mockup-theme');
+    const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<style>
+/* Brand tokens lifted from app/client/styles.css so the mockup reads as the same product. */
+:root {
+  color-scheme: light;
+  --bg: #f3f4f8;
+  --panel: #ffffff;
+  --panel-alt: #f8f9fc;
+  --ink: #1b1f2a;
+  --muted: #5b6472;
+  --line: #e3e6ee;
+  --brand: #0b5cab;
+  --brand-ink: #0a4a8a;
+  --accent: #7b5cff;
+  --badge-bg: #eef1fb;
+  --badge-ink: #3a4a7a;
+  --good: #12805c;
+  --warn: #a8620a;
+  --warn-bg: #fdf3e4;
+  --bad: #b3352b;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+  --radius: 14px;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1017;
+  --panel: #171a23;
+  --panel-alt: #1c202b;
+  --ink: #e9ecf3;
+  --muted: #9aa4b5;
+  --line: #262b38;
+  --brand: #4c9aff;
+  --brand-ink: #7cb6ff;
+  --accent: #9d86ff;
+  --badge-bg: #1e2436;
+  --badge-ink: #a9b6dd;
+  --good: #3ddca4;
+  --warn: #f0b45e;
+  --warn-bg: #2c2418;
+  --bad: #ff8a7d;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+}
+button, input, select { font-family: inherit; }
+
+/* ---------- Mockup ribbon ---------- */
+.ribbon {
+  flex: none;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 7px 16px; font-size: 12.5px;
+  background: repeating-linear-gradient(135deg, rgba(123,92,255,.14) 0 12px, transparent 12px 24px), var(--panel);
+  border-bottom: 1px solid var(--line); color: var(--muted);
+}
+.ribbon strong { color: var(--ink); }
+.ribbon .spacer { margin-left: auto; }
+.ribbon button {
+  font-size: 12.5px; padding: 4px 11px; border-radius: 999px; cursor: pointer;
+  color: var(--brand-ink); background: var(--badge-bg); border: 1px solid var(--line);
+}
+.ribbon button:hover { border-color: var(--brand); }
+
+/* ---------- Shell ---------- */
+.shell { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+.topbar {
+  flex: none; display: flex; align-items: center; gap: 16px;
+  padding: 11px 20px; color: #fff;
+  background: linear-gradient(120deg, var(--brand) 0%, var(--accent) 100%);
+}
+.brand { display: flex; align-items: center; gap: 11px; flex: none; }
+/* Swap Chatbot/app/public/logo.png to rebrand; height fixed, width follows aspect ratio. */
+.brand-mark {
+  height: 32px; width: auto; max-width: 150px; object-fit: contain; display: block;
+  background: #fff; border-radius: 8px; padding: 4px 9px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / .2);
+}
+.brand-fallback {
+  height: 32px; width: 32px; display: none; place-items: center;
+  font-weight: 800; font-size: 15px; color: var(--brand);
+  background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgb(0 0 0 / .2);
+}
+
+.topsearch { flex: 1; display: flex; gap: 8px; max-width: 660px; position: relative; }
+.topsearch input {
+  flex: 1; padding: 9px 14px 9px 36px; font-size: 14px; color: var(--ink);
+  background: var(--panel); border: 1px solid transparent; border-radius: 10px; outline: none;
+}
+.topsearch input:focus { box-shadow: 0 0 0 3px rgba(255,255,255,.45); }
+.topsearch .mag { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: .5; pointer-events: none; }
+.topsearch button {
+  padding: 0 18px; font-size: 14px; font-weight: 600; color: var(--brand);
+  background: #fff; border: none; border-radius: 10px; cursor: pointer; white-space: nowrap;
+}
+.kbd {
+  position: absolute; right: 96px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--muted); border: 1px solid var(--line);
+  border-radius: 5px; padding: 1px 6px; pointer-events: none;
+}
+.topactions { flex: none; display: flex; gap: 8px; margin-left: auto; }
+.icon-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; cursor: pointer;
+  font-size: 13px; font-weight: 600;
+  color: #fff; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); border-radius: 8px;
+}
+.icon-btn:hover { background: rgba(255,255,255,.28); }
+.icon-btn.sq { width: 32px; padding: 0; justify-content: center; }
+
+/* ---------- Three panes ---------- */
+.panes { flex: 1; display: grid; grid-template-columns: 258px minmax(340px, 1fr) minmax(380px, 1.1fr); min-height: 0; }
+
+/* ---------- Facet rail ---------- */
+.rail { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); background: var(--panel); }
+.rail-top {
+  flex: none; display: flex; align-items: center; gap: 8px;
+  padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--panel-alt);
+}
+.rail-top h2 { margin: 0; font-size: 12.5px; font-weight: 700; }
+.rail-top .spacer { margin-left: auto; }
+.linkbtn { font-size: 12px; color: var(--brand); background: none; border: none; cursor: pointer; padding: 0; }
+.linkbtn:hover { text-decoration: underline; }
+.linkbtn:disabled { color: var(--muted); cursor: default; text-decoration: none; }
+.rail-scroll { flex: 1; overflow: auto; padding: 6px 12px 20px; }
+
+.facet { border-bottom: 1px solid var(--line); padding: 2px 0 6px; }
+.facet-head {
+  display: flex; align-items: center; gap: 7px; width: 100%; cursor: pointer;
+  padding: 9px 2px; background: none; border: none; color: var(--ink); text-align: left;
+}
+.facet-head h3 { margin: 0; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.facet-head .caret { margin-left: auto; color: var(--muted); transition: transform .15s ease; font-size: 9px; }
+.facet.closed .caret { transform: rotate(-90deg); }
+.facet.closed .facet-list { display: none; }
+.facet-head .on-n {
+  font-size: 10.5px; font-weight: 700; color: #fff; background: var(--brand);
+  border-radius: 999px; padding: 1px 6px;
+}
+/* Names the CSV column a facet reads. */
+.prov {
+  font-size: 9px; font-weight: 700; letter-spacing: .3px; padding: 1px 5px; border-radius: 4px;
+  color: var(--warn); background: var(--warn-bg); border: 1px solid currentColor; white-space: nowrap;
+}
+.prov.col {
+  color: var(--muted); background: var(--badge-bg); border-color: var(--line);
+  font-family: "Cascadia Code", ui-monospace, Consolas, monospace; font-weight: 600; text-transform: none;
+}
+.facet-list { display: flex; flex-direction: column; }
+.facet-row {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 7px;
+  font-size: 13px; color: var(--ink); background: none; border: none;
+  border-radius: 7px; cursor: pointer; text-align: left;
+}
+.facet-row:hover { background: var(--badge-bg); }
+.facet-row.on { background: var(--badge-bg); color: var(--brand-ink); font-weight: 600; }
+.facet-row.gap { color: var(--warn); }
+.facet-box {
+  flex: none; width: 14px; height: 14px; border: 1.5px solid var(--line);
+  border-radius: 4px; display: grid; place-items: center; font-size: 10px; color: #fff; line-height: 1;
+}
+.facet-row.on .facet-box { background: var(--brand); border-color: var(--brand); }
+.facet-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.facet-count { flex: none; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.facet-more { align-self: flex-start; font-size: 12px; color: var(--brand); background: none; border: none; cursor: pointer; padding: 5px 7px; }
+.facet-more:hover { text-decoration: underline; }
+.rail-note { font-size: 11.5px; line-height: 1.5; color: var(--muted); padding: 14px 4px 0; }
+.rail-note .prov { margin-right: 3px; }
+
+/* ---------- Result list ---------- */
+.list { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 16px 0; align-items: center; }
+.chips-label { font-size: 12px; color: var(--muted); margin-right: 2px; }
+.chip {
+  font-size: 12.5px; color: var(--brand-ink); background: var(--badge-bg);
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; cursor: pointer;
+}
+.chip:hover { border-color: var(--brand); }
+.chip .n { color: var(--muted); font-size: 11px; margin-left: 4px; }
+
+.pills { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 0 16px; }
+.pills:not(:empty) { padding-top: 9px; }
+.pills-label { font-size: 12px; color: var(--muted); }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  font-size: 12px; font-weight: 600; color: var(--brand-ink);
+  background: var(--badge-bg); border: 1px solid var(--brand); border-radius: 999px; padding: 3px 8px 3px 10px;
+}
+.pill .x { font-size: 13px; color: var(--muted); }
+.pill:hover .x { color: var(--bad); }
+.pill.gap { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+.list-head {
+  flex: none; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 16px; font-size: 12.5px; color: var(--muted);
+  border-bottom: 1px solid var(--line); background: var(--panel-alt); margin-top: 10px;
+}
+.list-head .spacer { margin-left: auto; }
+.selall { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: 12.5px; }
+.selall input { width: 14px; height: 14px; accent-color: var(--brand); cursor: pointer; }
+.sortsel {
+  font-size: 12.5px; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 7px; padding: 3px 7px; cursor: pointer;
+}
+
+.rows { flex: 1; overflow: auto; padding: 8px 10px 16px; }
+.row {
+  display: grid; grid-template-columns: 20px 34px 1fr; gap: 11px; align-items: start;
+  padding: 11px 12px; margin-bottom: 6px; cursor: pointer;
+  background: var(--panel); border: 1px solid var(--line);
+  border-left: 3px solid transparent; border-radius: 10px;
+}
+.row:hover { border-color: var(--brand); }
+.row.sel { border-color: var(--brand); border-left-color: var(--brand); background: var(--badge-bg); }
+.row.checked { border-left-color: var(--accent); }
+.row-check { width: 15px; height: 15px; margin: 10px 0 0; accent-color: var(--brand); cursor: pointer; }
+.ftype {
+  width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center;
+  font-size: 9px; font-weight: 800; letter-spacing: .3px; color: #fff; margin-top: 1px;
+}
+.row-main { min-width: 0; text-align: left; }
+.row-name {
+  display: block; font-size: 14.5px; font-weight: 650; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.row-cap { margin: 4px 0 0; font-size: 12.8px; line-height: 1.45; color: var(--muted); }
+.row-cap em { font-style: normal; background: rgba(123,92,255,.2); border-radius: 3px; padding: 0 2px; color: var(--ink); }
+.row-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 8px; }
+.tag {
+  font-size: 11px; font-weight: 600; color: var(--badge-ink);
+  background: var(--badge-bg); border-radius: 999px; padding: 2px 8px; white-space: nowrap;
+}
+.row.sel .tag { background: var(--panel); }
+.tag.coll { color: var(--brand); }
+.tag.cls { color: var(--accent); }
+.tag.gap { color: var(--warn); background: var(--warn-bg); }
+.tag.who { color: var(--good); }
+.path {
+  font-size: 11.5px; color: var(--muted); min-width: 0; flex: 1 1 100%;
+  font-family: "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Relevance as a labelled band, not a raw 0-4 reranker score. */
+.match { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.match .bars { display: flex; gap: 2px; }
+.match .bars i { width: 3px; height: 9px; border-radius: 1px; background: var(--line); }
+.match.strong { color: var(--good); } .match.strong .bars i:nth-child(-n+3) { background: var(--good); }
+.match.good   { color: var(--brand); } .match.good   .bars i:nth-child(-n+2) { background: var(--brand); }
+.match.fair   { color: var(--warn); } .match.fair   .bars i:nth-child(-n+1) { background: var(--warn); }
+
+.empty { padding: 46px 28px; text-align: center; color: var(--muted); line-height: 1.6; }
+.empty h3 { margin: 0 0 6px; font-size: 15px; color: var(--ink); }
+
+/* ---------- Selection bar ---------- */
+.selbar {
+  flex: none; display: none; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 16px; font-size: 13px; color: #fff;
+  background: linear-gradient(120deg, var(--brand), var(--accent));
+}
+.selbar.on { display: flex; }
+.selbar .spacer { margin-left: auto; }
+.selbar b { font-variant-numeric: tabular-nums; }
+.selbar button {
+  font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 8px; cursor: pointer;
+  color: var(--brand); background: #fff; border: none;
+}
+.selbar button.ghost { color: #fff; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); }
+
+.rating {
+  flex: none; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 16px; font-size: 12.5px; color: var(--muted);
+  border-top: 1px solid var(--line); background: var(--panel-alt);
+}
+.rdot {
+  width: 27px; height: 27px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  color: var(--brand-ink); background: var(--badge-bg);
+  border: 1px solid var(--line); border-radius: 50%;
+}
+.rdot:hover { border-color: var(--brand); }
+.rdot.on { color: #fff; background: var(--brand); border-color: var(--brand); }
+
+/* ---------- Preview pane ---------- */
+.pane { display: flex; flex-direction: column; min-height: 0; background: var(--panel-alt); }
+.pane-empty { flex: 1; display: grid; place-items: center; padding: 40px; text-align: center; color: var(--muted); line-height: 1.6; }
+.pane-head { flex: none; padding: 14px 18px 0; border-bottom: 1px solid var(--line); background: var(--panel); }
+.pane-title { display: flex; align-items: flex-start; gap: 11px; }
+.pane-title h2 { margin: 0; font-size: 16px; font-weight: 700; overflow-wrap: anywhere; }
+.pane-sub { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+.pane-close { margin-left: auto; flex: none; width: 28px; height: 28px; border-radius: 7px; cursor: pointer; color: var(--muted); background: none; border: 1px solid var(--line); }
+.pane-close:hover { color: var(--ink); border-color: var(--brand); }
+.pane-acts { display: flex; gap: 8px; flex-wrap: wrap; margin: 11px 0 0; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  font-size: 12.5px; font-weight: 600; padding: 5px 12px; border-radius: 8px;
+  text-decoration: none; color: var(--brand); background: var(--badge-bg); border: 1px solid var(--line);
+}
+.btn:hover { border-color: var(--brand); }
+.btn.primary { color: #fff; background: var(--brand); border-color: var(--brand); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.tabs { display: flex; gap: 2px; margin-top: 12px; overflow-x: auto; }
+.tab {
+  font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap;
+  background: none; border: none; border-bottom: 2px solid transparent; padding: 8px 11px;
+}
+.tab:hover { color: var(--ink); }
+.tab.on { color: var(--brand); border-bottom-color: var(--brand); }
+.tab .n { font-weight: 500; opacity: .75; }
+.pane-body { flex: 1; overflow: auto; padding: 16px 18px 28px; }
+
+.tblwrap { overflow: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+table.prev { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+table.prev th, table.prev td {
+  text-align: left; padding: 7px 11px; border-bottom: 1px solid var(--line);
+  white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
+}
+table.prev th { position: sticky; top: 0; background: var(--panel-alt); font-size: 11.5px; letter-spacing: .3px; text-transform: uppercase; color: var(--muted); }
+table.prev tr:last-child td { border-bottom: none; }
+table.prev td { font-family: "Cascadia Code", ui-monospace, Consolas, monospace; }
+.prev-note { margin: 9px 2px 0; font-size: 11.5px; color: var(--muted); }
+
+.pdfpage {
+  background: #fff; color: #16181d; border-radius: 6px; padding: 26px 30px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.18); font-size: 11.5px; line-height: 1.7; margin-bottom: 14px;
+}
+.pdfpage h4 { margin: 0 0 3px; font-size: 14px; }
+.pdfpage .rule { height: 1px; background: #d8dbe3; margin: 12px 0; }
+.pdfpage .ln { height: 7px; border-radius: 3px; background: #e6e8ee; margin-bottom: 8px; }
+
+.doc { font-size: 13.5px; line-height: 1.65; }
+.doc h3 { margin: 18px 0 7px; font-size: 12px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+.doc h3:first-child { margin-top: 0; }
+.doc p { margin: 0 0 11px; }
+.doc code { font-family: "Cascadia Code", ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--badge-bg); border-radius: 4px; padding: 1px 5px; }
+.doc ul { margin: 0 0 11px; padding-left: 20px; }
+.doc li { margin-bottom: 5px; }
+
+.gov { font-size: 13.5px; }
+.gov section { margin-bottom: 20px; }
+.gov h3 { margin: 0 0 9px; font-size: 12px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+.kv { display: grid; grid-template-columns: minmax(110px, auto) 1fr; gap: 7px 14px; margin: 0; }
+.kv dt { color: var(--muted); font-size: 12.5px; }
+.kv dd { margin: 0; font-weight: 600; }
+.clslist { display: flex; flex-wrap: wrap; gap: 6px; }
+.cls {
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  background: var(--badge-bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px;
+}
+.person { display: flex; align-items: center; gap: 9px; padding: 8px 11px; margin-bottom: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; }
+.av {
+  width: 27px; height: 27px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; color: #fff; background: var(--brand);
+}
+.av.expert { background: var(--accent); }
+.person .who { font-weight: 600; }
+.person .role { margin-left: auto; font-size: 11px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--muted); }
+.gapnote {
+  display: flex; align-items: flex-start; gap: 9px; padding: 11px 13px;
+  font-size: 12.5px; line-height: 1.55; color: var(--warn);
+  background: var(--warn-bg); border: 1px solid currentColor; border-radius: 9px;
+}
+
+.loc {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px; margin-bottom: 7px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 9px;
+}
+.loc-path {
+  flex: 1; min-width: 0; font-size: 11.8px; color: var(--muted);
+  font-family: "Cascadia Code", ui-monospace, Consolas, monospace;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.loc-src { flex: none; font-size: 11px; font-weight: 700; color: var(--badge-ink); background: var(--badge-bg); border-radius: 999px; padding: 2px 8px; }
+
+/* ---------- Bulk export dialog ---------- */
+.modal {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -48%); z-index: 60;
+  width: 640px; max-width: 94vw; max-height: 88vh; display: none; flex-direction: column;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.modal.open { display: flex; transform: translate(-50%, -50%); }
+.modal-head { position: relative; flex: none; padding: 18px 22px 14px; border-bottom: 1px solid var(--line); }
+.modal-head h2 { margin: 0 0 3px; font-size: 17px; }
+.modal-head p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.modal-head .x { position: absolute; top: 14px; right: 16px; cursor: pointer; background: none; border: none; color: var(--muted); font-size: 20px; }
+.modal-body { flex: 1; overflow: auto; padding: 18px 22px; }
+.modal-foot {
+  flex: none; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 13px 22px; border-top: 1px solid var(--line); background: var(--panel-alt);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.modal-foot .spacer { margin-left: auto; }
+.modal h4 { margin: 0 0 9px; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+.modal h4 .norm { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.modal section { margin-bottom: 20px; }
+.modal section:last-child { margin-bottom: 0; }
+.scopes { display: flex; flex-direction: column; gap: 7px; }
+.scope {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 10px 13px; border: 1px solid var(--line); border-radius: 10px; font-size: 13.5px;
+}
+.scope:hover { border-color: var(--brand); }
+.scope.on { border-color: var(--brand); background: var(--badge-bg); }
+.scope input { accent-color: var(--brand); }
+.scope .n { margin-left: auto; font-weight: 700; font-variant-numeric: tabular-nums; }
+.scope.dis { opacity: .5; cursor: not-allowed; }
+.colgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 3px 12px; }
+.col {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 6px; border-radius: 6px;
+  font-size: 12.5px; font-family: "Cascadia Code", ui-monospace, Consolas, monospace;
+}
+.col:hover { background: var(--badge-bg); }
+.col input { accent-color: var(--brand); flex: none; }
+.col span.k { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.col .prov { font-family: inherit; margin-left: auto; }
+.filenm {
+  width: 100%; padding: 8px 11px; font-size: 13px; color: var(--ink);
+  background: var(--panel-alt); border: 1px solid var(--line); border-radius: 8px;
+  font-family: "Cascadia Code", ui-monospace, Consolas, monospace;
+}
+.summary { font-size: 12.5px; color: var(--muted); }
+.summary b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* ---------- Design notes drawer ---------- */
+.notes {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 440px; max-width: 92vw; z-index: 40;
+  background: var(--panel); border-left: 1px solid var(--line); box-shadow: var(--shadow);
+  transform: translateX(100%); transition: transform .22s ease; overflow: auto; padding: 20px 22px 40px;
+}
+.notes.open { transform: none; }
+.notes h2 { margin: 0 0 4px; font-size: 16px; }
+.notes h3 { margin: 24px 0 8px; font-size: 12px; letter-spacing: .6px; text-transform: uppercase; color: var(--brand); }
+.notes .sub { margin: 0 0 6px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.notes ol { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.6; }
+.notes li { margin-bottom: 13px; }
+.notes b { display: block; }
+.notes .cost { display: inline-block; margin-top: 4px; font-size: 11.5px; color: var(--muted); }
+.notes code { font-family: "Cascadia Code", ui-monospace, Consolas, monospace; font-size: 12px; background: var(--badge-bg); border-radius: 4px; padding: 1px 4px; }
+.notes pre {
+  margin: 6px 0 0; padding: 10px 12px; font-size: 11.5px; line-height: 1.5; overflow: auto;
+  background: var(--panel-alt); border: 1px solid var(--line); border-radius: 8px;
+  font-family: "Cascadia Code", ui-monospace, Consolas, monospace;
+}
+.notes-close { position: absolute; top: 14px; right: 16px; cursor: pointer; background: none; border: none; color: var(--muted); font-size: 19px; }
+.scrim { position: fixed; inset: 0; background: rgba(10,14,22,.45); z-index: 39; opacity: 0; pointer-events: none; transition: opacity .22s ease; }
+.scrim.on { opacity: 1; pointer-events: auto; }
+.scrim.top { z-index: 55; }
+
+@media (max-width: 1240px) {
+  .panes { grid-template-columns: 244px 1fr; }
+  .pane {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 580px; max-width: 94vw; z-index: 30;
+    border-left: 1px solid var(--line); box-shadow: var(--shadow);
+    transform: translateX(100%); transition: transform .2s ease;
+  }
+  .pane.open { transform: none; }
+  .list { border-right: none; }
+}
+@media (max-width: 760px) {
+  .panes { grid-template-columns: 1fr; }
+  .rail { display: none; }
+  .topsearch .kbd { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="ribbon">
+  <strong>Mockup — Option B: Discovery Workbench</strong>
+  <span>Rebaselined on <code>main_assets.csv</code> (904 rows, 12 cols). Owner / expert values are illustrative — those columns are empty in the real file.</span>
+  <span class="spacer"></span>
+  <button id="themeBtn" type="button">Toggle theme</button>
+  <button id="notesBtn" type="button">Design notes</button>
+</div>
+
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <img class="brand-mark" id="logo" src="libra-logo.png" alt="Libra" />
+      <div class="brand-fallback" id="logoFallback">L</div>
+    </div>
+    <form class="topsearch" id="form" role="search">
+      <span class="mag" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <input id="q" type="text" autocomplete="off" aria-label="Search assets"
+             placeholder="Describe what you need, or leave blank to browse everything" />
+      <span class="kbd">Ctrl K</span>
+      <button type="submit">Search</button>
+    </form>
+    <div class="topactions">
+      <button class="icon-btn" type="button" id="exportTop">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M8 1.8v8.4M5 7.4 8 10.4l3-3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.4 11.4v1.4a1.4 1.4 0 0 0 1.4 1.4h8.4a1.4 1.4 0 0 0 1.4-1.4v-1.4" stroke-linecap="round"/>
+        </svg>
+        Export
+      </button>
+      <button class="icon-btn sq" type="button" title="Saved searches" aria-label="Saved searches">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 2h8v12l-4-3-4 3V2z" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="panes">
+    <aside class="rail">
+      <div class="rail-top">
+        <h2>Refine</h2>
+        <span class="spacer"></span>
+        <button class="linkbtn" id="clearAll" type="button">Clear all</button>
+      </div>
+      <div class="rail-scroll" id="rail"></div>
+    </aside>
+
+    <section class="list">
+      <div class="chips" id="chips"></div>
+      <div class="pills" id="pills"></div>
+      <div class="list-head">
+        <label class="selall"><input type="checkbox" id="selAll" /> <span id="selAllLabel">Select all</span></label>
+        <span id="meta">—</span>
+        <span class="spacer"></span>
+        <label for="sort">Sort</label>
+        <select class="sortsel" id="sort">
+          <option value="rel">Relevance</option>
+          <option value="name">Name (A–Z)</option>
+          <option value="type">Platform</option>
+          <option value="coll">Collection</option>
+          <option value="gov">Least governed first</option>
+        </select>
+      </div>
+      <div class="rows" id="rows" tabindex="0" aria-label="Search results"></div>
+      <div class="selbar" id="selbar"></div>
+      <div class="rating" id="rating"></div>
+    </section>
+
+    <section class="pane" id="pane" aria-live="polite"></section>
+  </div>
+</div>
+
+<div class="scrim top" id="modalScrim"></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-head">
+    <button class="x" id="modalX" aria-label="Close">&times;</button>
+    <h2 id="modalTitle">Bulk export</h2>
+    <p>Search, narrow with facets, then take the result set away as CSV.</p>
+  </div>
+  <div class="modal-body">
+    <section>
+      <h4>What to export</h4>
+      <div class="scopes" id="scopes"></div>
+    </section>
+    <section>
+      <h4>Columns <span class="norm">— <button class="linkbtn" id="colAll" type="button">all</button> · <button class="linkbtn" id="colNone" type="button">none</button> · <button class="linkbtn" id="colToday" type="button">CSV columns only</button></span></h4>
+      <div class="colgrid" id="cols"></div>
+    </section>
+    <section>
+      <h4>File name</h4>
+      <input class="filenm" id="fname" type="text" />
+    </section>
+  </div>
+  <div class="modal-foot">
+    <span class="summary" id="expSummary"></span>
+    <span class="spacer"></span>
+    <button class="btn" type="button" id="modalCancel">Cancel</button>
+    <button class="btn primary" type="button" id="doExport">Download CSV</button>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="notes" id="notes" aria-hidden="true">
+  <button class="notes-close" id="notesClose" aria-label="Close">&times;</button>
+  <h2>What changes in Option B</h2>
+  <p class="sub">Rebaselined against <code>Chatbot/main_assets.csv</code> as saved 27 Aug 15:56 — 904 rows, 12 columns.
+  Every facet on this screen now reads a column that exists. The badge beside each facet names it.</p>
+
+  <h3>Your current schema</h3>
+  <pre>asset_id            collectionId        displayText
+asset_entity_type   name                PurviewURL
+qualifiedName       userDescription     collectionName     &lt;- added
+asset_type_friendly &lt;- added            owner  &lt;- added    expert &lt;- added</pre>
+  <p class="sub" style="margin-top:8px">904 rows, 904 distinct <code>asset_id</code>. Grain intact.</p>
+
+  <h3>⚠ One blocker</h3>
+  <ol>
+    <li><b><code>owner</code> and <code>expert</code> are empty on all 904 rows.</b>
+      The columns exist but nothing was joined into them. Every Stewardship facet therefore reads
+      &ldquo;No owner: 904&rdquo;, and the Owner and Expert facets have a single bucket each.
+      <span class="cost">Source is <code>contact_owner_id</code> / <code>contact_expert_id</code> in
+      <code>Reporting/csv_exports/main_assets.csv</code>. Only 4 assets have an owner and 5 have an expert, across
+      just 4 distinct Entra object IDs — resolve those four through Graph and hardcode the map.</span></li>
+  </ol>
+
+  <h3>Working from your columns</h3>
+  <ol>
+    <li><b>Collection facet</b> — <code>collectionName</code>.
+      <pre>StorageAccounts      738
+Databricks           120
+RelationalDatabases   31
+NoSQL                 11
+Root                   4</pre>
+      <span class="cost">Zero blanks. Blank <code>collectionId</code> and <code>hokiepurview</code> both fold into Root.</span></li>
+    <li><b>Platform facet</b> — <code>asset_type_friendly</code>.
+      <pre>ADLS           739      Cosmos    8
+Databricks     121      ADX       3
+Azure SQL       21      ADF       2
+Azure Synapse   10</pre>
+      <span class="cost">Note this is a <em>platform</em> grouping, not an entity-type label — Databricks table,
+      Hive view, Hive table, catalog and schema all collapse into &ldquo;Databricks&rdquo;. That is a reasonable
+      top-level facet, but it means a user cannot separate a view from a table.</span></li>
+    <li><b>Entity type facet</b> — <code>asset_entity_type</code>, kept as a second, finer facet.
+      <span class="cost">Costs nothing, and restores the Hive-view-versus-table distinction that
+      <code>asset_type_friendly</code> collapses. Worth keeping both.</span></li>
+    <li><b>Stewardship facets</b> — derived from <code>owner</code> and <code>expert</code> being non-empty.
+      <em>No owner assigned</em>, <em>No expert assigned</em>, <em>No owner or expert</em>.
+      <span class="cost">Correction to earlier advice: <strong>you do not need count columns.</strong> That was
+      predicated on delimited multi-value strings. With plain scalars, <code>owner eq ''</code> is directly
+      filterable in Azure AI Search, so the two columns you have are sufficient.</span></li>
+    <li><b>Format facet</b> — derived client-side from the <code>qualifiedName</code> extension. No CSV column.</li>
+    <li><b>Preview never leaves the page.</b>
+      Today <code>#/view</code>, <code>#/table</code> and <code>#/image</code> take over the whole window in a new
+      tab. Here the third pane renders the same content beside the list.
+      <span class="cost">PdfViewer / TableViewer / ImageViewer become embeddable; their fetch logic is unchanged.</span></li>
+    <li><b>Relevance becomes legible.</b> Strong / Good / Fair bands over the same reranker score.</li>
+    <li><b>The AI description is finally readable.</b> The Description tab renders all of
+      <code>userDescription</code>, not just the caption.</li>
+    <li><b>Rating moved below the results</b>, search moved into the header, query moved into the URL.</li>
+    <li><b>Keyboard driven.</b> <code>↑</code> <code>↓</code> <code>Enter</code> <code>Esc</code>
+      <code>Ctrl K</code>. Empty query browses everything.</li>
+  </ol>
+
+  <h3>Deferred by choice</h3>
+  <ol>
+    <li><b>Classifications and managed attributes.</b>
+      Not in the file, not on this screen. When you want them, only two are safe at asset grain:
+      <code>DataClassification.DataClassification</code> (90 assets, 1:1) and
+      <code>classification_source</code> (19 assets, 1:1).</li>
+    <li><b>Still genuinely 1:N — do not flatten.</b>
+      <pre>tag                      11 of 11 assets multi   max 3
+DataClassification.DocumentLevel
+                          2 of 10 assets multi   max 4
+classification_typename   4 of 76 assets multi   max 2
+DataClassification.SecurityTags
+                          1 of  3 assets multi   max 2
+contact_expert_id         1 of  5 assets multi   max 2</pre>
+      <span class="cost">A semicolon-joined value becomes one facet bucket per <em>combination</em>, counts stop
+      summing to the result total, and absence tests break. Model as <code>Collection(Edm.String)</code> in the
+      index instead.</span></li>
+    <li><b>Your <code>expert</code> column has one such case.</b>
+      <code>NFLPlayByPlayData</code> has two experts. Decide now whether that row takes the first value, or whether
+      <code>expert</code> becomes a collection field later.</li>
+  </ol>
+
+  <h3>Needs a new API endpoint</h3>
+  <ol>
+    <li><b>Bulk export at real scale.</b>
+      <code>/api/search</code> caps <code>top</code> at 25, so it cannot back an export of everything matching a facet set. This needs its own route that pages the index and streams CSV.
+      <span class="cost">Use <code>$skip</code> up to 100k documents, or a sorted key beyond that. Stream the response rather than building the file in memory, and apply the same facet filters server-side.</span></li>
+    <li><b>Scope is a real decision.</b>
+      <em>Selected rows</em> is trivial and client-side. <em>Everything matching the filters</em> is the one people actually want and the one that needs the endpoint. This prototype exports whatever is on screen so the interaction is real.</li>
+    <li><b>Governance worth settling first.</b>
+      A public, unauthenticated app that exports 900 rows of catalog metadata including owner names is a different risk profile from one returning 15 search results. Decide whether export requires sign-in even if search does not, and log every export next to the query in <code>dbo.search_log</code>.</li>
+    <li><b>CSV hygiene is already handled here.</b>
+      Cells beginning <code>=</code> <code>+</code> <code>-</code> <code>@</code> are prefixed with an apostrophe so Excel cannot execute them, and the file carries a UTF-8 BOM. Both matter when the export contains free-text descriptions.</li>
+  </ol>
+</aside>
+
+<script>
+/* ---------------------------------------------------------------
+   Sample corpus, mirroring Chatbot/main_assets.csv as saved 27 Aug.
+   asset_id, name, asset_entity_type, collectionId, collectionName and
+   qualifiedName are real. owner / expert values are illustrative:
+   those columns exist in the CSV but are empty on all 904 rows.
+----------------------------------------------------------------*/
+const COLLECTIONS = {
+  wgfk2t: 'StorageAccounts',
+  '8d4eiy': 'Databricks',
+  uyohkq: 'RelationalDatabases',
+  cqw1zd: 'NoSQL',
+  hokiepurview: 'Root',
+  '': 'Root'
+};
+
+const TYPE_LABELS = {
+  azure_datalake_gen2_path: 'Data Lake file',
+  databricks_table: 'Databricks table',
+  databricks_catalog: 'Databricks catalog',
+  databricks_schema: 'Databricks schema',
+  hive_table: 'Hive table',
+  hive_view: 'Hive view',
+  azure_sql_table: 'Azure SQL table',
+  azure_sql_db: 'Azure SQL database',
+  azure_synapse_dedicated_sql_table: 'Synapse SQL table',
+  azure_cosmosdb_sqlapi_collection: 'Cosmos DB container',
+  azure_data_explorer_table: 'Data Explorer table',
+  adf_copy_activity: 'Data Factory copy activity'
+};
+
+/* asset_type_friendly as it exists in the CSV — a platform grouping, not an
+   entity-type label. All five Databricks/Hive entity types collapse to one value. */
+const PLATFORM_LABELS = { adls:'ADLS', databricks:'Databricks', sql:'Azure SQL', synapse:'Azure Synapse', cosmos:'Cosmos', adx:'ADX', adf:'ADF' };
+const FMT_COLOR = { csv:'#1f7a4d', json:'#a2681b', parquet:'#5b3fbf', pdf:'#b3352b', docx:'#1f5fa8', table:'#c9432c', sql:'#1f5fa8', container:'#2b7a4b', kusto:'#8a5a00', view:'#7a5c1f' };
+const FMT_ABBR = { table:'TBL', container:'DOC', kusto:'KQL', view:'VIEW', sql:'SQL' };
+
+const ASSETS = [
+  { assetId:'c21595b0-208f-4383-bd10-46f6f6f60000', name:'staff_table', type:'databricks_table', coll:'8d4eiy', source:'databricks', fmt:'table', score:3.42,
+    owner:'Priya Raman', expert:'Marcus Ellery',
+    caption:'Roster of <em>staff</em> members with assigned <em>equipment</em>, department and location, used to reconcile issued hardware against headcount.',
+    locations:[
+      {qn:'databricks://61c6e19b-6256-44e7-bf2d-d3e93eb7e588/catalogs/hokieadb/schemas/adb/tables/staff_table', src:'Unity Catalog'},
+      {qn:'adb.staff_table@adb-2778872873979183.3.azuredatabricks.net', src:'Hive metastore'},
+      {qn:'hokieadb.adb.staff_table', src:'Workspace'}],
+    desc:[['h3','Purpose'],['p','Authoritative roster of staff and the equipment assigned to each person. Refreshed nightly from the HR extract and joined to the asset register on <code>employee_id</code>.'],
+      ['h3','Notable columns'],['ul',['<code>employee_id</code> — surrogate key, unique','<code>department</code> — 14 distinct values','<code>asset_tag</code> — nullable; ~8% of staff have no issued equipment','<code>location_code</code> — maps to the facilities dimension']],
+      ['h3','Caveats'],['p','Contractors are excluded. Rows are not deleted on termination — filter on <code>is_active</code>.']],
+    preview:{kind:'table', note:'SELECT TOP 10 — executed through the app identity over the private endpoint.',
+      cols:['employee_id','full_name','department','asset_tag','location_code','is_active'],
+      rows:[['10041','Alvarez, R.','Facilities','EQ-22841','ANL-04','true'],['10042','Bhatt, S.','Research','EQ-22902','ANL-04','true'],
+        ['10043','Chen, M.','Research','EQ-23110','HAN-11','true'],['10044','Duarte, L.','Operations','','BPMI-02','true'],
+        ['10045','Eriksen, T.','Facilities','EQ-23255','ANL-07','false'],['10046','Fowler, K.','Safety','EQ-23301','HAN-11','true'],
+        ['10047','Gupta, A.','Research','EQ-23344','ANL-04','true'],['10048','Haddad, N.','Operations','EQ-23390','BPMI-02','true'],
+        ['10049','Iversen, P.','Safety','','HAN-03','true'],['10050','Jain, V.','Research','EQ-23412','ANL-07','true']]} },
+
+  { assetId:'8f2a1c44-9d13-4a77-b1e2-51c7a9f30011', name:'AssetInventory.csv', type:'azure_datalake_gen2_path', coll:'wgfk2t', source:'adls', fmt:'csv', score:3.18,
+    owner:'Priya Raman', expert:'',
+    caption:'Full <em>inventory</em> of tracked physical <em>equipment</em> including tag, category, custodian and acquisition cost.',
+    locations:[{qn:'https://hokiedemoadls2.dfs.core.windows.net/samples/DOE/ANL/Purview/AssetInventory.csv', src:'ADLS Gen2'}],
+    desc:[['h3','Purpose'],['p','Line-level register of every capitalised asset held at the Argonne site. One row per asset tag.'],
+      ['h3','Notable columns'],['ul',['<code>asset_tag</code> — primary key, format <code>EQ-#####</code>','<code>category</code> — 9 values, dominated by IT Equipment','<code>custodian_id</code> — joins to <code>staff_table.employee_id</code>','<code>acquired_on</code> — ISO date, some blanks pre-2015']],
+      ['h3','Caveats'],['p','Disposed assets remain with <code>status = RETIRED</code> rather than being removed.']],
+    preview:{kind:'table', note:'First 10 rows of 4,812 — streamed through /api/file, never downloaded to disk.',
+      cols:['asset_tag','category','description','custodian_id','acquired_on','status'],
+      rows:[['EQ-22841','IT Equipment','ThinkPad P16 mobile workstation','10041','2023-04-11','ACTIVE'],['EQ-22902','IT Equipment','Dell U2723QE monitor','10042','2023-04-11','ACTIVE'],
+        ['EQ-23110','Lab Instrument','Fluke 87V multimeter','10043','2022-11-02','ACTIVE'],['EQ-23255','Vehicle','Ford Transit 250','10045','2019-06-30','RETIRED'],
+        ['EQ-23301','Safety','SCBA cylinder set','10046','2024-01-19','ACTIVE'],['EQ-23344','IT Equipment','Surface Dock 2','10047','2024-03-05','ACTIVE'],
+        ['EQ-23390','Lab Instrument','Thermo Scientific centrifuge','10048','2021-08-14','ACTIVE'],['EQ-23412','IT Equipment','ThinkPad X1 Carbon','10050','2024-07-22','ACTIVE'],
+        ['EQ-23455','Facilities','Genie scissor lift','10041','2018-02-27','RETIRED'],['EQ-23501','Safety','Gas detector, 4-head','10046','2025-01-08','ACTIVE']]} },
+
+  { assetId:'2b71d0e9-4c88-4f21-9a03-77bb2e4c5522', name:'DOE_Facilities_Inventory.csv', type:'azure_datalake_gen2_path', coll:'wgfk2t', source:'adls', fmt:'csv', score:2.87,
+    owner:'', expert:'Dana Whitfield',
+    caption:'Site-level <em>inventory</em> of buildings and facilities with gross square footage, ownership and operating status.',
+    locations:[{qn:'https://hokiedemoadls2.dfs.core.windows.net/samples/DOE/Battelle/structured/DOE_Facilities_Inventory.csv', src:'ADLS Gen2'}],
+    desc:[['h3','Purpose'],['p','Facilities register covering every building in the estate. Used as the location dimension for equipment and staff reporting.'],
+      ['h3','Notable columns'],['ul',['<code>location_code</code> — joins to <code>staff_table</code> and the asset register','<code>gross_sqft</code> — integer, no nulls','<code>ownership</code> — OWNED / LEASED','<code>status</code> — OPERATING / STANDBY / DECOMMISSIONED']]],
+    preview:{kind:'table', note:'First 10 rows of 341.',
+      cols:['location_code','site','building','gross_sqft','ownership','status'],
+      rows:[['ANL-04','Argonne','Bldg 203 — Materials','184320','OWNED','OPERATING'],['ANL-07','Argonne','Bldg 211 — Chemistry','96500','OWNED','OPERATING'],
+        ['HAN-03','Hanford','324 Facility','142000','OWNED','STANDBY'],['HAN-11','Hanford','Central Plateau Annex','58750','LEASED','OPERATING'],
+        ['BPMI-02','Bettis','Admin East','71200','OWNED','OPERATING'],['ANL-12','Argonne','Bldg 362 — Advanced Photon','221900','OWNED','OPERATING'],
+        ['HAN-19','Hanford','Waste Treatment Support','33400','LEASED','OPERATING'],['BPMI-05','Bettis','Test Bay 3','48900','OWNED','DECOMMISSIONED'],
+        ['ANL-21','Argonne','Utilities Plant','27600','OWNED','OPERATING'],['HAN-27','Hanford','Security Operations','19850','OWNED','OPERATING']]} },
+
+  { assetId:'55c4e7a1-1f6b-4b90-8de4-9a0f31b76633', name:'Production ProductInventory.parquet', type:'azure_datalake_gen2_path', coll:'wgfk2t', source:'adls', fmt:'parquet', score:2.61,
+    owner:'', expert:'',
+    caption:'AdventureWorks production <em>inventory</em> by product and location — quantity on hand, bin and shelf.',
+    locations:[
+      {qn:'https://hokiedemoadls2.dfs.core.windows.net/samples/DOE/BPMI/Dec2024Workshop/silver/AdventureWorks/Production ProductInventory.parquet', src:'ADLS Gen2 · silver'},
+      {qn:'https://hokiedemoadls2.dfs.core.windows.net/samples/DOE/BPMI/Dec2024Workshop/bronze/AdventureWorks/Production ProductInventory.csv', src:'ADLS Gen2 · bronze'}],
+    desc:[['h3','Purpose'],['p','Silver-layer copy of the AdventureWorks <code>Production.ProductInventory</code> table, used in the December 2024 workshop. Demonstration data, not operational.'],
+      ['h3','Caveats'],['p','This is sample data shipped with AdventureWorks. Do not use for real reporting.']],
+    preview:{kind:'table', note:'Parquet footer read via ranged GET; first 10 of 1,069 rows decoded in the browser.',
+      cols:['ProductID','LocationID','Shelf','Bin','Quantity','ModifiedDate'],
+      rows:[['1','1','A','1','408','2014-02-08'],['1','6','B','5','324','2014-02-08'],['1','50','A','5','353','2014-02-08'],
+        ['2','1','A','2','427','2014-02-08'],['2','6','B','1','318','2014-02-08'],['2','50','A','6','364','2014-02-08'],
+        ['3','1','A','7','585','2014-02-08'],['3','6','B','9','443','2014-02-08'],['3','50','A','10','324','2014-02-08'],['4','1','A','9','512','2014-02-08']]} },
+
+  { assetId:'9e3f77b2-6a45-4c18-92ad-4c1e88f90044', name:'Security_Software_Inventory.json', type:'azure_datalake_gen2_path', coll:'wgfk2t', source:'adls', fmt:'json', score:2.44,
+    owner:'Sam Okafor', expert:'Sam Okafor',
+    caption:'Endpoint software <em>inventory</em> emitted by advanced hunting — installed product, version and vulnerability state per device.',
+    locations:[{qn:'https://hokiedemoadls2.dfs.core.windows.net/samples/DOE/Hanford/AdvancedHunting/Security_Software_Inventory.json', src:'ADLS Gen2'}],
+    desc:[['h3','Purpose'],['p','Defender advanced-hunting export listing software installed on each managed endpoint, with CVE exposure where known.'],
+      ['h3','Notable columns'],['ul',['<code>DeviceName</code> — endpoint hostname','<code>SoftwareVendor</code> / <code>SoftwareName</code> / <code>SoftwareVersion</code>','<code>VulnerabilitySeverityLevel</code> — Low / Medium / High / Critical']],
+      ['h3','Sensitivity'],['p','Contains hostnames and unpatched vulnerability detail. Treat as confidential.']],
+    preview:{kind:'table', note:'JSON array flattened to columns; first 8 of 26,401 records.',
+      cols:['DeviceName','SoftwareVendor','SoftwareName','SoftwareVersion','VulnerabilitySeverityLevel'],
+      rows:[['HAN-WKS-0142','microsoft','windows_11','10.0.22631.4460','Medium'],['HAN-WKS-0142','google','chrome','131.0.6778.86','Low'],
+        ['HAN-WKS-0187','adobe','acrobat_reader','24.002.20933','High'],['HAN-LAP-0311','microsoft','office','16.0.18129.20158','Medium'],
+        ['HAN-LAP-0311','oracle','jre','1.8.0_401','Critical'],['ANL-WKS-0044','mozilla','firefox','133.0','Low'],
+        ['ANL-WKS-0044','7-zip','7-zip','23.01','Medium'],['ANL-SRV-0009','vmware','tools','12.4.5','High']]} },
+
+  { assetId:'71ad0c58-3e92-4d66-8b17-2f5c94ae0055', name:'SQLInventory.csv', type:'azure_datalake_gen2_path', coll:'wgfk2t', source:'adls', fmt:'csv', score:2.29,
+    owner:'', expert:'',
+    caption:'<em>Inventory</em> of SQL Server instances and databases across the estate with edition, version and patch level.',
+    locations:[{qn:'https://hokiedemoadls2.dfs.core.windows.net/samples/DOE/ANL/Purview/SQLInventory.csv', src:'ADLS Gen2'}],
+    desc:[['h3','Purpose'],['p','Estate-wide register of SQL Server instances collected by the platform team, used for licence reconciliation and patch planning.']],
+    preview:{kind:'table', note:'First 8 rows of 192.',
+      cols:['instance','database','edition','version','patch_level','environment'],
+      rows:[['ANL-SQL-01','FacilitiesDW','Enterprise','2019','CU28','PROD'],['ANL-SQL-01','AssetRegister','Enterprise','2019','CU28','PROD'],
+        ['ANL-SQL-02','StagingLoad','Standard','2022','CU16','TEST'],['HAN-SQL-04','SecurityOps','Enterprise','2022','CU16','PROD'],
+        ['HAN-SQL-04','SecurityOpsArchive','Enterprise','2022','CU16','PROD'],['BPMI-SQL-01','WorkshopDemo','Developer','2019','CU25','DEV'],
+        ['BPMI-SQL-02','HRExtract','Standard','2019','CU28','PROD'],['ANL-SQL-07','Sandbox','Developer','2022','CU12','DEV']]} },
+
+  { assetId:'3c9b6e10-88f4-42a3-a5d9-6e70b1c40066', name:'Consolidated Global Technology and Equipment Usage P&P - Clean.docx', type:'azure_datalake_gen2_path', coll:'wgfk2t', source:'adls', fmt:'docx', score:2.05,
+    owner:'Helena Voss', expert:'',
+    caption:'Policy and procedure governing acceptable use, issue and return of <em>equipment</em> and technology assets.',
+    locations:[{qn:'https://hokiedemoadls2.dfs.core.windows.net/samples/DOE/Policies/Consolidated Global Technology and Equipment Usage P&P - Clean.docx', src:'ADLS Gen2'}],
+    desc:[['h3','Purpose'],['p','Consolidated policy covering issue, acceptable use, transfer and return of technology and equipment assets. Supersedes the four regional policies withdrawn in 2023.'],
+      ['h3','Caveats'],['p','Word documents are not rendered in the browser today — the viewer streams the file. A future option is server-side conversion to PDF for view-only display.']],
+    preview:{kind:'none', note:'No in-browser renderer for .docx. Opening streams the file through the authenticated viewer endpoint.'} },
+
+  { assetId:'d40f2a76-5b31-4e09-97c8-1a8de6f70077', name:'ComplaintData.pdf', type:'azure_datalake_gen2_path', coll:'wgfk2t', source:'adls', fmt:'pdf', score:1.94,
+    owner:'', expert:'',
+    caption:'Case narrative referencing issued <em>equipment</em> and site access during the reporting period.',
+    locations:[
+      {qn:'https://hokiedemoadls2.dfs.core.windows.net/samples/DOE/ANL/Cases/ComplaintData.pdf', src:'ADLS Gen2 · ANL'},
+      {qn:'https://hokiedemoadls3.dfs.core.windows.net/archive/2024/Cases/ComplaintData.pdf', src:'ADLS Gen2 · archive'}],
+    desc:[['h3','Purpose'],['p','Scanned case file retained under the records schedule. Indexed for discovery; contents are summarised rather than extracted in full.'],
+      ['h3','Sensitivity'],['p','Contains personal information. Rendered view-only — the custom pdf.js canvas renderer exposes no download or print control.']],
+    preview:{kind:'pdf', note:'View-only render. No native toolbar, no download, no print.'} },
+
+  { assetId:'6ba82f39-7c04-4b58-b3e1-05fd9c210088', name:'asset_details_refreshcycle', type:'databricks_table', coll:'8d4eiy', source:'databricks', fmt:'table', score:2.72,
+    owner:'', expert:'Marcus Ellery',
+    caption:'Refresh cadence and last-run state for every catalogued <em>asset</em>, used to spot stale <em>inventory</em> extracts.',
+    locations:[{qn:'databricks://61c6e19b-6256-44e7-bf2d-d3e93eb7e588/catalogs/hokieadb/schemas/pvreporting/tables/asset_details_refreshcycle', src:'Unity Catalog'}],
+    desc:[['h3','Purpose'],['p','Operational table behind the Purview reporting notebooks. One row per catalogued asset with its expected refresh cadence and the timestamp of the last successful load.'],
+      ['h3','Caveats'],['p','Cadence is declared, not measured — an asset can be marked daily and still be six weeks stale.']],
+    preview:{kind:'table', note:'SELECT TOP 10 via the Databricks SQL warehouse.',
+      cols:['asset_guid','asset_name','cadence','last_refresh_utc','is_stale'],
+      rows:[['c21595b0…','staff_table','daily','2026-08-26 02:14','false'],['8f2a1c44…','AssetInventory.csv','weekly','2026-08-24 03:02','false'],
+        ['2b71d0e9…','DOE_Facilities_Inventory.csv','monthly','2026-07-01 03:11','true'],['55c4e7a1…','Production ProductInventory.parquet','none','2024-12-11 19:40','true'],
+        ['9e3f77b2…','Security_Software_Inventory.json','daily','2026-08-27 01:55','false'],['71ad0c58…','SQLInventory.csv','weekly','2026-08-20 03:07','false'],
+        ['e1c73b90…','FRSInterests','daily','2026-08-26 04:22','false'],['a92d5f14…','MedicarePrescriberData','quarterly','2026-04-02 05:10','false'],
+        ['4f80ce23…','Real_Estate_Sales','monthly','2026-08-01 06:00','false'],['b7e19d05…','Crime_Reports','weekly','2026-08-25 06:03','false']]} },
+
+  { assetId:'f19e4d82-2a67-4c93-84b0-33ce70a10099', name:'store_sales', type:'databricks_table', coll:'8d4eiy', source:'databricks', fmt:'table', score:1.88,
+    owner:'', expert:'',
+    caption:'TPC-DS <em>store</em> sales fact table from the Databricks samples catalog.',
+    locations:[{qn:'databricks://61c6e19b-6256-44e7-bf2d-d3e93eb7e588/catalogs/samples/schemas/tpcds_sf1000/tables/store_sales', src:'Unity Catalog'}],
+    desc:[['h3','Purpose'],['p','Benchmark data shipped with Databricks. Present in the catalog because the workspace scan includes the <code>samples</code> catalog.'],
+      ['h3','Caveats'],['p','Not organisational data. A candidate for exclusion from the scan scope.']],
+    preview:{kind:'table', note:'SELECT TOP 6 via the Databricks SQL warehouse.',
+      cols:['ss_item_sk','ss_customer_sk','ss_store_sk','ss_quantity','ss_sales_price'],
+      rows:[['10241','88213','7','4','34.20'],['10242','19044','7','1','12.99'],['10243','55310','12','9','108.45'],
+        ['10244','72668','3','2','21.10'],['10245','40197','12','6','77.88'],['10246','63925','7','3','45.03']]} },
+
+  { assetId:'0a5c8e47-9b12-4d70-a6f3-8e24b1730100', name:'constraint_table_usage', type:'hive_view', coll:'8d4eiy', source:'databricks', fmt:'view', score:1.82,
+    owner:'', expert:'',
+    caption:'Hive <em>information_schema</em> view listing table constraint usage.',
+    locations:[{qn:'information_schema.constraint_table_usage@adb-2778872873979183.3.azuredatabricks.net', src:'Hive metastore'}],
+    desc:[['h3','Purpose'],['p','System metadata view exposed by the Hive metastore. Catalogued incidentally by the workspace scan.'],
+      ['h3','Caveats'],['p','System object. A strong candidate for a scan-scope exclusion rule so it stops competing with real assets in search results.']],
+    preview:{kind:'table', note:'SELECT TOP 5.',
+      cols:['constraint_catalog','constraint_schema','constraint_name','table_name'],
+      rows:[['hokieadb','adb','pk_staff','staff_table'],['hokieadb','adb','fk_staff_loc','staff_table'],
+        ['hokieadb','pvreporting','pk_refresh','asset_details_refreshcycle'],['samples','tpch','pk_orders','orders'],['samples','tpch','pk_part','part']]} },
+
+  { assetId:'e1c73b90-4f28-4a15-9c60-77ab0e520111', name:'FRSInterests', type:'azure_sql_table', coll:'uyohkq', source:'sql', fmt:'sql', score:2.34,
+    owner:'Dana Whitfield', expert:'',
+    caption:'Facility Registry System <em>interests</em> — regulated entity contacts and their affiliations.',
+    locations:[{qn:'mssql://hokiecopilotchatsqlserver.database.windows.net/hokiecopilotsqldb01/dbo/FRSInterests', src:'Azure SQL'}],
+    desc:[['h3','Purpose'],['p','EPA Facility Registry Service extract holding the interest records that link people and organisations to regulated facilities.'],
+      ['h3','Sensitivity'],['p','Contains named individuals and contact details.']],
+    preview:{kind:'table', note:'SELECT TOP 8 over the private endpoint using the app managed identity.',
+      cols:['REGISTRY_ID','INTEREST_TYPE','AFFILIATION','START_DATE','STATUS'],
+      rows:[['110000307523','AIR MAJOR','Argonne National Laboratory','2011-04-01','ACTIVE'],['110000512877','NPDES','Hanford Site','2009-11-15','ACTIVE'],
+        ['110000733901','RCRA LQG','Bettis Atomic Power','2014-02-20','ACTIVE'],['110000901244','TRI REPORTER','Argonne National Laboratory','2016-07-01','ACTIVE'],
+        ['110001120388','AIR SYNTHETIC MINOR','Battelle Memorial','2018-03-12','INACTIVE'],['110001344012','NPDES','Bettis Atomic Power','2012-09-30','ACTIVE'],
+        ['110001566730','RCRA SQG','Hanford Site','2020-01-08','ACTIVE'],['110001788155','TRI REPORTER','Battelle Memorial','2021-05-19','ACTIVE']]} },
+
+  { assetId:'a92d5f14-6c39-4e82-b071-19cd4a830122', name:'MedicarePrescriberData', type:'azure_sql_table', coll:'uyohkq', source:'sql', fmt:'sql', score:2.11,
+    owner:'', expert:'',
+    caption:'Medicare Part D <em>prescriber</em> summary by NPI, drug and claim volume.',
+    locations:[{qn:'mssql://hokiecopilotchatsqlserver.database.windows.net/hokiecopilotsqldb01/dbo/MedicarePrescriberData', src:'Azure SQL'}],
+    desc:[['h3','Purpose'],['p','CMS Part D prescriber public use file loaded for analytics demos. One row per prescriber, drug and year.'],
+      ['h3','Sensitivity'],['p','Prescriber names and identifiers are public under CMS release rules, but the DEA number classification still applies.']],
+    preview:{kind:'table', note:'SELECT TOP 6.',
+      cols:['NPI','PRESCRIBER_LAST','SPECIALTY','DRUG_NAME','CLAIM_COUNT'],
+      rows:[['1003000126','ARNOLD','Internal Medicine','ATORVASTATIN CALCIUM','412'],['1003000134','BAKER','Family Practice','LISINOPRIL','388'],
+        ['1003000258','CHANDRA','Cardiology','METOPROLOL SUCCINATE','501'],['1003000341','DIAZ','Endocrinology','METFORMIN HCL','677'],
+        ['1003000459','EDWARDS','Family Practice','AMLODIPINE BESYLATE','295'],['1003000567','FARLEY','Psychiatry','SERTRALINE HCL','334']]} },
+
+  { assetId:'4f80ce23-1d75-4b96-8a42-6b03fe940133', name:'Real_Estate_Sales', type:'azure_synapse_dedicated_sql_table', coll:'uyohkq', source:'synapse', fmt:'sql', score:1.96,
+    owner:'', expert:'Helena Voss',
+    caption:'Property <em>sales</em> transactions with assessed value, sale price and town.',
+    locations:[{qn:'mssql://hokiesynapsews.sql.azuresynapse.net/hokiepool01/mcaps/Real_Estate_Sales', src:'Synapse dedicated pool'}],
+    desc:[['h3','Purpose'],['p','Open-data property transaction file loaded into the dedicated SQL pool for workshop use.']],
+    preview:{kind:'table', note:'SELECT TOP 6 from the dedicated pool.',
+      cols:['SERIAL_NUMBER','TOWN','ASSESSED_VALUE','SALE_AMOUNT','SALES_RATIO'],
+      rows:[['2020177','Ansonia','133000','248000','0.536'],['2020225','Bethel','247500','310000','0.798'],
+        ['2020318','Bridgeport','88200','142500','0.618'],['2020402','Danbury','196400','265000','0.741'],
+        ['2020511','Fairfield','412700','595000','0.693'],['2020634','Greenwich','1204000','1875000','0.642']]} },
+
+  { assetId:'b7e19d05-8a46-4c31-95e7-2d70cf150144', name:'Crime_Reports', type:'azure_synapse_dedicated_sql_table', coll:'uyohkq', source:'synapse', fmt:'sql', score:1.90,
+    owner:'', expert:'',
+    caption:'Incident-level <em>crime</em> reports with offence code, district and reported date.',
+    locations:[{qn:'mssql://hokiesynapsews.sql.azuresynapse.net/hokiepool01/mcaps/Crime_Reports', src:'Synapse dedicated pool'}],
+    desc:[['h3','Purpose'],['p','Municipal open-data incident feed loaded for geospatial analytics demos.']],
+    preview:{kind:'table', note:'SELECT TOP 6 from the dedicated pool.',
+      cols:['INCIDENT_ID','OFFENSE_CODE','DISTRICT','REPORTED_DATE','SHOOTING'],
+      rows:[['I2026-004412','3115','B2','2026-03-11','N'],['I2026-004498','1402','C11','2026-03-12','N'],
+        ['I2026-004503','0619','D4','2026-03-12','N'],['I2026-004677','3831','A1','2026-03-14','N'],
+        ['I2026-004712','1102','B3','2026-03-15','N'],['I2026-004890','0802','E13','2026-03-17','Y']]} },
+
+  { assetId:'c8021ba7-3f59-4d24-8e16-45ab9c260155', name:'DOE_Facilities_Inventory', type:'azure_data_explorer_table', coll:'cqw1zd', source:'adx', fmt:'kusto', score:2.55,
+    owner:'Dana Whitfield', expert:'Dana Whitfield',
+    caption:'Data Explorer copy of the facilities <em>inventory</em>, kept for time-series analysis of occupancy.',
+    locations:[{qn:'https://hokieadxpurview01.germanywestcentral.kusto.windows.net/hokieadxpurviewdb01/DOE_Facilities_Inventory', src:'Azure Data Explorer'}],
+    desc:[['h3','Purpose'],['p','ADX ingestion of the facilities register, retained so occupancy and square-footage changes can be queried over time.'],
+      ['h3','Caveats'],['p','Duplicates the ADLS copy. The ADLS file is the system of record; this is a derived analytical copy.']],
+    preview:{kind:'table', note:'take 6 — executed against the ADX cluster with the app identity.',
+      cols:['location_code','site','gross_sqft','status','ingested_utc'],
+      rows:[['ANL-04','Argonne','184320','OPERATING','2026-08-01 04:00'],['ANL-07','Argonne','96500','OPERATING','2026-08-01 04:00'],
+        ['HAN-03','Hanford','142000','STANDBY','2026-08-01 04:00'],['HAN-11','Hanford','58750','OPERATING','2026-08-01 04:00'],
+        ['BPMI-02','Bettis','71200','OPERATING','2026-08-01 04:00'],['ANL-12','Argonne','221900','OPERATING','2026-08-01 04:00']]} },
+
+  { assetId:'7d63af18-5e20-4a87-b914-08cf3d470166', name:'conversations', type:'azure_cosmosdb_sqlapi_collection', coll:'cqw1zd', source:'cosmos', fmt:'container', score:1.86,
+    owner:'', expert:'',
+    caption:'Chat <em>conversations</em> container backing the internal assistant.',
+    locations:[{qn:'https://hokiesimplechatcosmosdb.documents.azure.com/dbs/SimpleChat/colls/conversations', src:'Cosmos DB'}],
+    desc:[['h3','Purpose'],['p','Stores one document per assistant conversation, partitioned by user. Written by the chat application, not by any pipeline.'],
+      ['h3','Sensitivity'],['p','Free-text user input. Assume it can contain anything a person typed.']],
+    preview:{kind:'table', note:'First 5 documents, flattened.',
+      cols:['id','userId','title','messageCount','lastUpdated'],
+      rows:[['c-8841','u-1042','Quarterly facilities rollup','14','2026-08-24'],['c-8847','u-1119','Vendor onboarding questions','7','2026-08-25'],
+        ['c-8852','u-1042','Draft policy review','22','2026-08-25'],['c-8860','u-1207','Asset tag reconciliation','5','2026-08-26'],
+        ['c-8871','u-1119','Export request','3','2026-08-26']]} },
+
+  { assetId:'ae4720c6-9d81-4f35-a072-61bd8e580177', name:'messages', type:'azure_cosmosdb_sqlapi_collection', coll:'cqw1zd', source:'cosmos', fmt:'container', score:1.84,
+    owner:'', expert:'',
+    caption:'Individual chat <em>messages</em> for the internal assistant, partitioned by conversation.',
+    locations:[{qn:'https://hokiesimplechatcosmosdb.documents.azure.com/dbs/SimpleChat/colls/messages', src:'Cosmos DB'}],
+    desc:[['h3','Purpose'],['p','One document per message. High write volume; queried only by conversation id.'],
+      ['h3','Caveats'],['p','No TTL configured — the container grows without bound. Worth raising with the owning team, which does not currently exist in the catalog.']],
+    preview:{kind:'table', note:'First 5 documents, flattened.',
+      cols:['id','conversationId','role','createdUtc','tokenCount'],
+      rows:[['m-44120','c-8841','user','2026-08-24 09:12','41'],['m-44121','c-8841','assistant','2026-08-24 09:12','388'],
+        ['m-44122','c-8841','user','2026-08-24 09:14','19'],['m-44130','c-8847','user','2026-08-25 11:02','63'],
+        ['m-44131','c-8847','assistant','2026-08-25 11:02','512']]} }
+];
+
+const POPULAR = [
+  { text:'equipment inventory across the estate', n:41 },
+  { text:'staff and department reference data', n:27 },
+  { text:'facilities square footage by site', n:19 },
+  { text:'software vulnerabilities by device', n:12 }
+];
+
+/* Derived from the owner / expert scalars, so the gap facets need no extra column. */
+function stewardship(a) {
+  const v = [a.owner ? 'has-owner' : 'no-owner', a.expert ? 'has-expert' : 'no-expert'];
+  if (!a.owner && !a.expert) v.push('no-contact');
+  return v;
+}
+const STEW_LABELS = {
+  'has-owner':'Has an owner', 'has-expert':'Has an expert',
+  'no-owner':'⚠ No owner assigned', 'no-expert':'⚠ No expert assigned',
+  'no-contact':'⚠ No owner or expert'
+};
+const GAP_VALUES = new Set(['no-owner','no-expert','no-contact','__none__']);
+
+/* Every facet reads a column that exists in Chatbot/main_assets.csv today and is
+   one value per asset. Classifications and managed attributes are deferred. */
+const FACETS = [
+  { key:'coll',     title:'Collection',     col:'collectionName',      open:true,  values:(a) => [a.coll] },
+  { key:'platform', title:'Platform',       col:'asset_type_friendly', open:true,  values:(a) => [a.source] },
+  { key:'stew',     title:'Stewardship',    col:'owner / expert',      open:true,  values:stewardship },
+  { key:'owner',    title:'Owner',          col:'owner',               open:false, values:(a) => [a.owner || '__none__'] },
+  { key:'expert',   title:'Expert',         col:'expert',              open:false, values:(a) => [a.expert || '__none__'] },
+  { key:'type',     title:'Entity type',    col:'asset_entity_type',   open:false, values:(a) => [a.type] },
+  { key:'fmt',      title:'Format',         col:'derived',             open:false, values:(a) => [a.fmt] }
+];
+
+/* --------------------------- state --------------------------- */
+const state = {
+  q: '', results: [], sel: null, tab: 'preview', rating: null,
+  facets: {}, closed: new Set(FACETS.filter((f) => !f.open).map((f) => f.key)),
+  more: new Set(), picked: new Set(), exportScope: 'filtered', exportCols: null
+};
+for (const f of FACETS) state.facets[f.key] = new Set();
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* Server returns <em> highlights only; mirrors App.jsx's sanitize(). */
+const capHtml = (s) => esc(s).replace(/&lt;em&gt;/g,'<em>').replace(/&lt;\/em&gt;/g,'</em>');
+const typeLabel = (t) => TYPE_LABELS[t] || t;
+const collName = (c) => COLLECTIONS[c] || c || '(none)';
+const abbr = (f) => FMT_ABBR[f] || f.slice(0, 4).toUpperCase();
+const band = (s) => s >= 3.0 ? ['strong','Strong match'] : s >= 2.3 ? ['good','Good match'] : ['fair','Fair match'];
+const initials = (n) => n.split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
+
+function facetLabel(key, v) {
+  if (v === '__none__') {
+    if (key === 'owner') return '⚠ No owner';
+    if (key === 'expert') return '⚠ No expert';
+    return '⚠ Not set';
+  }
+  if (key === 'stew') return STEW_LABELS[v] || v;
+  if (key === 'coll') return collName(v);
+  if (key === 'type') return typeLabel(v);
+  if (key === 'platform') return PLATFORM_LABELS[v] || v;
+  if (key === 'fmt') return v.toUpperCase();
+  return v;
+}
+function shortPath(qn) {
+  try { const u = new URL(qn); return u.hostname.split('.')[0] + decodeURIComponent(u.pathname); }
+  catch { return qn; }
+}
+const plainDesc = (a) => a.desc.map(([t, v]) => t === 'ul' ? v.join(' ') : v).join(' ').replace(/<[^>]+>/g, '');
+
+/* --------------------------- search --------------------------- */
+const STOP = new Set(['the','and','for','with','across','that','all','any','our','from','into','are','was','estate','data','show','give','list']);
+function search(q) {
+  const useful = q.toLowerCase().split(/\s+/).filter((t) => t.length > 2 && !STOP.has(t));
+  if (!useful.length) return ASSETS.slice();
+  const hay = (a) => (a.name + ' ' + a.caption + ' ' + a.type + ' ' + collName(a.coll) + ' ' + plainDesc(a)).toLowerCase();
+  return ASSETS.filter((a) => useful.some((t) => hay(a).includes(t.replace(/s$/, ''))));
+}
+function runSearch(q) {
+  state.q = q;
+  state.results = search(q);
+  for (const f of FACETS) state.facets[f.key].clear();
+  state.sel = null;
+  state.rating = null;
+  state.picked.clear();
+  history.replaceState(null, '', q ? '#q=' + encodeURIComponent(q) : '#');
+  render();
+}
+
+function matchesFacets(a) {
+  for (const f of FACETS) {
+    const on = state.facets[f.key];
+    if (!on.size) continue;
+    if (!f.values(a).some((v) => on.has(v))) return false;
+  }
+  return true;
+}
+/* Lower = less governed. Drives the "Least governed first" sort. */
+const govScore = (a) => (a.owner ? 1 : 0) + (a.expert ? 1 : 0);
+
+function visible() {
+  const r = state.results.filter(matchesFacets);
+  const by = $('sort').value;
+  if (by === 'name') r.sort((a, b) => a.name.localeCompare(b.name));
+  else if (by === 'type') r.sort((a, b) => (PLATFORM_LABELS[a.source] || '').localeCompare(PLATFORM_LABELS[b.source] || '') || b.score - a.score);
+  else if (by === 'coll') r.sort((a, b) => collName(a.coll).localeCompare(collName(b.coll)) || b.score - a.score);
+  else if (by === 'gov') r.sort((a, b) => govScore(a) - govScore(b) || b.score - a.score);
+  else r.sort((a, b) => b.score - a.score);
+  return r;
+}
+
+/* --------------------------- render --------------------------- */
+function render() { renderChips(); renderPills(); renderRail(); renderRows(); renderSelBar(); renderRating(); renderPane(); }
+
+function renderChips() {
+  $('chips').innerHTML = '<span class="chips-label">Most common searches:</span>' +
+    POPULAR.map((p) => `<button class="chip" type="button" data-q="${esc(p.text)}">${esc(p.text)}<span class="n">${p.n}</span></button>`).join('') +
+    (state.q ? '<button class="chip" type="button" data-q="">Browse everything</button>' : '');
+}
+
+function renderPills() {
+  const out = [];
+  for (const f of FACETS) {
+    for (const v of state.facets[f.key]) {
+      out.push(`<button class="pill${GAP_VALUES.has(v) ? ' gap' : ''}" type="button" data-unpick="${esc(f.key)}" data-val="${esc(v)}">
+        ${esc(f.title)}: ${esc(facetLabel(f.key, v))} <span class="x">&times;</span></button>`);
+    }
+  }
+  $('pills').innerHTML = out.length ? `<span class="pills-label">Filters:</span>${out.join('')}` : '';
+  $('clearAll').disabled = !out.length;
+}
+
+function renderRail() {
+  const html = FACETS.map((f) => {
+    const counts = new Map();
+    for (const a of state.results) for (const v of f.values(a)) counts.set(v, (counts.get(v) || 0) + 1);
+    if (!counts.size) return '';
+    const rows = [...counts.entries()].sort((x, y) => y[1] - x[1] || String(x[0]).localeCompare(String(y[0])));
+    const on = state.facets[f.key];
+    const showAll = state.more.has(f.key);
+    const shown = showAll ? rows : rows.slice(0, 6);
+    return `<div class="facet${state.closed.has(f.key) ? ' closed' : ''}">
+      <button class="facet-head" type="button" data-toggle-facet="${esc(f.key)}" aria-expanded="${!state.closed.has(f.key)}">
+        <h3>${esc(f.title)}</h3>
+        ${f.col ? `<span class="prov col" title="Reads ${esc(f.col)} from main_assets.csv">${esc(f.col === 'derived' ? 'DERIVED' : f.col)}</span>` : ''}
+        ${on.size ? `<span class="on-n">${on.size}</span>` : ''}
+        <span class="caret">▼</span>
+      </button>
+      <div class="facet-list">
+        ${shown.map(([v, n]) => `<button class="facet-row${on.has(v) ? ' on' : ''}${GAP_VALUES.has(v) ? ' gap' : ''}" type="button" data-facet="${esc(f.key)}" data-val="${esc(v)}">
+          <span class="facet-box">${on.has(v) ? '✓' : ''}</span>
+          <span class="facet-label" title="${esc(facetLabel(f.key, v))}">${esc(facetLabel(f.key, v))}</span>
+          <span class="facet-count">${n}</span>
+        </button>`).join('')}
+        ${rows.length > 6 ? `<button class="facet-more" type="button" data-more="${esc(f.key)}">${showAll ? 'Show less' : `Show ${rows.length - 6} more`}</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  $('rail').innerHTML = html +
+    `<p class="rail-note">Every facet reads a column that exists in <code>Chatbot/main_assets.csv</code> today. Counts come from the current result set; server-side facets would cover the whole index.</p>`;
+}
+
+function renderRows() {
+  const rows = visible();
+  const total = state.results.length;
+  $('meta').innerHTML = total
+    ? `<strong>${rows.length}</strong>${rows.length !== total ? ` of ${total}` : ''} ${state.q ? `match${rows.length === 1 ? '' : 'es'} for &ldquo;${esc(state.q)}&rdquo;` : 'assets'}`
+    : 'No matches';
+
+  const allChecked = rows.length > 0 && rows.every((a) => state.picked.has(a.assetId));
+  $('selAll').checked = allChecked;
+  $('selAll').indeterminate = !allChecked && rows.some((a) => state.picked.has(a.assetId));
+  $('selAllLabel').textContent = allChecked ? `All ${rows.length} selected` : `Select all ${rows.length}`;
+
+  if (!total) {
+    $('rows').innerHTML = `<div class="empty">
+      <h3>Nothing matched &ldquo;${esc(state.q)}&rdquo;</h3>
+      <p>Results below the reranker threshold were discarded. You can look at them anyway, or try a related search.</p>
+      <p style="margin-top:16px"><button class="btn primary" type="button" id="relax">Show near-misses anyway</button></p>
+      <p style="margin-top:18px">Related: ${POPULAR.slice(0, 3).map((p) => `<button class="chip" type="button" data-q="${esc(p.text)}">${esc(p.text)}</button>`).join(' ')}</p>
+    </div>`;
+    return;
+  }
+  if (!rows.length) {
+    $('rows').innerHTML = `<div class="empty"><h3>Your filters hid everything</h3>
+      <p>${total} result${total === 1 ? '' : 's'} matched but none survive the current facet selection.</p>
+      <p style="margin-top:16px"><button class="btn" type="button" id="clearAll2">Clear all filters</button></p></div>`;
+    return;
+  }
+
+  $('rows').innerHTML = rows.map((a) => {
+    const [cls, label] = band(a.score);
+    return `<div class="row${state.sel === a.assetId ? ' sel' : ''}${state.picked.has(a.assetId) ? ' checked' : ''}" data-open="${a.assetId}">
+      <input class="row-check" type="checkbox" data-pick="${a.assetId}" ${state.picked.has(a.assetId) ? 'checked' : ''} aria-label="Select ${esc(a.name)}" />
+      <span class="ftype" style="background:${FMT_COLOR[a.fmt] || '#5b6472'}">${esc(abbr(a.fmt))}</span>
+      <div class="row-main">
+        <span class="row-name" title="${esc(a.name)}">${esc(a.name)}</span>
+        <p class="row-cap">${capHtml(a.caption)}</p>
+        <span class="row-meta">
+          <span class="tag coll">${esc(collName(a.coll))}</span>
+          <span class="tag">${esc(PLATFORM_LABELS[a.source] || a.source)}</span>
+          ${a.locations.length > 1 ? `<span class="tag">${a.locations.length} copies</span>` : ''}
+          ${a.owner ? `<span class="tag who">Owner: ${esc(a.owner)}</span>` : '<span class="tag gap">No owner</span>'}
+          ${a.expert ? `<span class="tag who">Expert: ${esc(a.expert)}</span>` : '<span class="tag gap">No expert</span>'}
+          <span class="match ${cls}" title="Reranker score ${a.score.toFixed(2)} of 4.00"><span class="bars"><i></i><i></i><i></i></span>${label}</span>
+          <span class="path" title="${esc(a.locations[0].qn)}">${esc(shortPath(a.locations[0].qn))}</span>
+        </span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSelBar() {
+  const n = state.picked.size;
+  const bar = $('selbar');
+  bar.classList.toggle('on', n > 0);
+  bar.innerHTML = n ? `<b>${n}</b> asset${n === 1 ? '' : 's'} selected
+    <span class="spacer"></span>
+    <button type="button" class="ghost" id="clearPick">Clear selection</button>
+    <button type="button" id="exportSel">Export CSV</button>` : '';
+}
+
+function renderRating() {
+  if (!state.results.length) { $('rating').innerHTML = ''; return; }
+  $('rating').innerHTML = `<span>How useful were these results?</span>
+    <span style="font-size:11.5px">1 · lowest</span>
+    ${[1,2,3,4,5].map((v) => `<button class="rdot${state.rating === v ? ' on' : ''}" type="button" data-rate="${v}">${v}</button>`).join('')}
+    <span style="font-size:11.5px">5 · highest</span>
+    ${state.rating ? '<span style="color:var(--good);font-weight:600">Thanks — recorded.</span>' : ''}`;
+}
+
+/* --------------------------- preview pane --------------------------- */
+function renderPane() {
+  const pane = $('pane');
+  const a = ASSETS.find((x) => x.assetId === state.sel);
+  if (!a) {
+    pane.classList.remove('open');
+    pane.innerHTML = `<div class="pane-empty"><div>
+      <p style="font-size:15px;color:var(--ink);margin:0 0 6px">Select a result to preview it here</p>
+      <p style="margin:0">The file, table or document renders beside your results — you never lose the query.</p>
+    </div></div>`;
+    return;
+  }
+  pane.classList.add('open');
+  const p = a.preview;
+  const govN = (a.owner ? 1 : 0) + (a.expert ? 1 : 0);
+  const tabs = [
+    ['preview', p.kind === 'none' ? 'Preview' : (p.kind === 'pdf' ? 'Document' : 'Data'), ''],
+    ['desc', 'Description', ''],
+    ['gov', 'Stewardship', String(govN)],
+    ['locs', 'Locations', String(a.locations.length)]
+  ];
+  pane.innerHTML = `
+    <div class="pane-head">
+      <div class="pane-title">
+        <span class="ftype" style="background:${FMT_COLOR[a.fmt] || '#5b6472'}">${esc(abbr(a.fmt))}</span>
+        <div style="min-width:0">
+          <h2>${esc(a.name)}</h2>
+          <p class="pane-sub">${esc(collName(a.coll))} · ${esc(PLATFORM_LABELS[a.source] || a.source)} · ${esc(typeLabel(a.type))}</p>
+        </div>
+        <button class="pane-close" id="paneClose" aria-label="Close preview">&times;</button>
+      </div>
+      <div class="pane-acts">
+        <a class="btn primary" href="#" onclick="return false">Open in Purview ↗</a>
+        <a class="btn" href="#" onclick="return false">Open full screen ↗</a>
+        <a class="btn" href="#" onclick="return false">Copy path</a>
+      </div>
+      <div class="tabs">
+        ${tabs.map(([k, l, n]) => `<button class="tab${state.tab === k ? ' on' : ''}" type="button" data-tab="${k}">${l}${n ? ` <span class="n">${n}</span>` : ''}</button>`).join('')}
+      </div>
+    </div>
+    <div class="pane-body">${paneBody(a)}</div>`;
+}
+
+function paneBody(a) {
+  if (state.tab === 'desc') {
+    return '<div class="doc">' + a.desc.map(([t, v]) =>
+      t === 'h3' ? `<h3>${v}</h3>` : t === 'ul' ? `<ul>${v.map((li) => `<li>${li}</li>`).join('')}</ul>` : `<p>${v}</p>`
+    ).join('') + '<p style="color:var(--muted);font-size:12px;margin-top:18px">Written by the Project Libra enrichment pipeline and stored on the Purview asset as <code>userDescription</code>. This is the text the search index embeds.</p></div>';
+  }
+
+  if (state.tab === 'gov') {
+    const gaps = [];
+    if (!a.owner) gaps.push('no owner');
+    if (!a.expert) gaps.push('no expert');
+    return `<div class="gov">
+      ${gaps.length ? `<div class="gapnote" style="margin-bottom:20px"><span>⚠</span>
+        <span>This asset has ${gaps.join(' and ')}. Purview's own catalog cannot filter <em>for</em> that absence — the Stewardship facets on the left can, which turns the result list into a remediation worklist.</span></div>` : ''}
+      <section>
+        <h3>Contacts</h3>
+        ${a.owner ? `<div class="person">
+          <span class="av">${esc(initials(a.owner))}</span>
+          <span class="who">${esc(a.owner)}</span><span class="role">Owner</span>
+        </div>` : '<p style="color:var(--muted);margin:0 0 8px">No owner assigned.</p>'}
+        ${a.expert ? `<div class="person">
+          <span class="av expert">${esc(initials(a.expert))}</span>
+          <span class="who">${esc(a.expert)}</span><span class="role">Expert</span>
+        </div>` : '<p style="color:var(--muted);margin:0">No expert assigned.</p>'}
+      </section>
+      <section>
+        <h3>Catalog</h3>
+        <dl class="kv">
+          <dt>Collection</dt><dd>${esc(collName(a.coll))} <span style="font-weight:400;color:var(--muted)">(${esc(a.coll)})</span></dd>
+          <dt>Platform</dt><dd>${esc(PLATFORM_LABELS[a.source] || a.source)}</dd>
+          <dt>Entity type</dt><dd>${esc(typeLabel(a.type))} <span style="font-weight:400;color:var(--muted)">(${esc(a.type)})</span></dd>
+          <dt>Asset ID</dt><dd style="font-family:'Cascadia Code',ui-monospace,Consolas,monospace;font-size:12px;font-weight:400">${esc(a.assetId)}</dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Not yet in the export</h3>
+        <p style="color:var(--muted);margin:0">Classifications and managed attributes are deliberately deferred. When they land, they belong here — <code>data_classification</code> is the only managed attribute that is safely one value per asset.</p>
+      </section>
+    </div>`;
+  }
+
+  if (state.tab === 'locs') {
+    return a.locations.map((l) => `<div class="loc">
+      <span class="loc-src">${esc(l.src)}</span>
+      <span class="loc-path" title="${esc(l.qn)}">${esc(l.qn)}</span>
+      <a class="btn" href="#" onclick="return false">Purview ↗</a>
+    </div>`).join('') +
+    (a.locations.length > 1
+      ? `<p class="prev-note">The same asset is catalogued in ${a.locations.length} places. The search API already collapses these into one result; this tab shows what was merged.</p>`
+      : '<p class="prev-note">Catalogued once.</p>');
+  }
+
+  const p = a.preview;
+  if (p.kind === 'table') {
+    return `<div class="tblwrap"><table class="prev">
+      <thead><tr>${p.cols.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead>
+      <tbody>${p.rows.map((r) => `<tr>${r.map((v) => `<td title="${esc(v)}">${esc(v) || '<span style="opacity:.4">null</span>'}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div><p class="prev-note">${esc(p.note)}</p>`;
+  }
+  if (p.kind === 'pdf') {
+    const page = (n) => `<div class="pdfpage">
+      <h4>Case record ${n}</h4><div style="color:#6b7280">Retained under records schedule 4.2</div>
+      <div class="rule"></div>
+      ${['92%','100%','86%','97%','74%','100%','90%','63%'].map((w) => `<div class="ln" style="width:${w}"></div>`).join('')}
+    </div>`;
+    return page('001') + page('002') + `<p class="prev-note">${esc(p.note)}</p>`;
+  }
+  return `<div class="empty"><h3>No in-browser preview</h3><p>${esc(p.note)}</p></div>`;
+}
+
+/* --------------------------- bulk export --------------------------- */
+/* Mirrors the twelve columns in Chatbot/main_assets.csv, one value per asset. */
+const EXPORT_COLS = [
+  { k:'asset_id',            prov:'today', get:(a) => a.assetId },
+  { k:'collectionId',        prov:'today', get:(a) => a.coll },
+  { k:'collectionName',      prov:'today', get:(a) => collName(a.coll) },
+  { k:'displayText',         prov:'today', get:(a) => a.name },
+  { k:'asset_entity_type',   prov:'today', get:(a) => a.type },
+  { k:'asset_type_friendly', prov:'today', get:(a) => PLATFORM_LABELS[a.source] || a.source },
+  { k:'name',                prov:'today', get:(a) => a.name },
+  { k:'PurviewURL',          prov:'today', get:(a) => `https://web.purview.azure.com/resource/hokiepurview/main/catalog/entity?guid=${a.assetId}` },
+  { k:'qualifiedName',       prov:'today', get:(a) => a.locations[0].qn },
+  { k:'owner',               prov:'today', get:(a) => a.owner },
+  { k:'expert',              prov:'today', get:(a) => a.expert },
+  { k:'relevance_score',     prov:'derived', get:(a) => a.score.toFixed(2) },
+  { k:'location_count',      prov:'derived', get:(a) => a.locations.length },
+  { k:'userDescription',     prov:'today', get:(a) => plainDesc(a) }
+];
+const DEFAULT_COLS = ['asset_id','name','asset_type_friendly','collectionName','qualifiedName','PurviewURL','owner','expert'];
+
+const scopeSets = () => ({
+  selected: ASSETS.filter((a) => state.picked.has(a.assetId)),
+  filtered: visible(),
+  results: state.results
+});
+
+function openExport() {
+  if (!state.exportCols) state.exportCols = new Set(DEFAULT_COLS);
+  if (!scopeSets().selected.length && state.exportScope === 'selected') state.exportScope = 'filtered';
+  $('fname').value = suggestName();
+  renderExport();
+  $('modal').classList.add('open');
+  $('modalScrim').classList.add('on');
+}
+function closeExport() { $('modal').classList.remove('open'); $('modalScrim').classList.remove('on'); }
+
+function suggestName() {
+  const slug = (state.q || 'all-assets').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+  return `libra-${slug}-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`;
+}
+
+function renderExport() {
+  const sets = scopeSets();
+  const opts = [
+    ['selected', 'Selected rows only', sets.selected.length, !sets.selected.length],
+    ['filtered', 'Everything matching the current filters', sets.filtered.length, false],
+    ['results',  'All results for this search, ignoring facets', sets.results.length, false]
+  ];
+  $('scopes').innerHTML = opts.map(([k, label, n, dis]) => `<label class="scope${state.exportScope === k ? ' on' : ''}${dis ? ' dis' : ''}">
+    <input type="radio" name="scope" value="${k}" ${state.exportScope === k ? 'checked' : ''} ${dis ? 'disabled' : ''} />
+    <span>${label}</span><span class="n">${n}</span></label>`).join('');
+
+  $('cols').innerHTML = EXPORT_COLS.map((c) => `<label class="col">
+    <input type="checkbox" data-col="${esc(c.k)}" ${state.exportCols.has(c.k) ? 'checked' : ''} />
+    <span class="k" title="${esc(c.k)}">${esc(c.k)}</span>
+    ${c.prov === 'derived' ? '<span class="prov col" title="Computed at search time, not a CSV column">DERIVED</span>' : ''}
+  </label>`).join('');
+
+  const rows = sets[state.exportScope].length;
+  const cols = state.exportCols.size;
+  const regen = EXPORT_COLS.filter((c) => state.exportCols.has(c.k) && c.prov === 'derived').length;
+  $('expSummary').innerHTML = `<b>${rows}</b> rows &times; <b>${cols}</b> columns` +
+    (regen ? ` · <span style="color:var(--muted)">${regen} computed, not from the CSV</span>` : '');
+  $('doExport').disabled = !rows || !cols;
+}
+
+function csvCell(v) {
+  const s = String(v == null ? '' : v);
+  // Guard against formula injection when the CSV is opened in Excel.
+  const safe = /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+  return /[",\n\r]/.test(safe) ? '"' + safe.replace(/"/g, '""') + '"' : safe;
+}
+function downloadCsv() {
+  const cols = EXPORT_COLS.filter((c) => state.exportCols.has(c.k));
+  const rows = scopeSets()[state.exportScope];
+  const lines = [cols.map((c) => csvCell(c.k)).join(',')];
+  for (const a of rows) lines.push(cols.map((c) => csvCell(c.get(a))).join(','));
+  // BOM so Excel reads UTF-8 correctly.
+  const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = ($('fname').value || 'libra-export.csv').replace(/[^\w.\-]+/g, '-');
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  closeExport();
+}
+
+/* --------------------------- events --------------------------- */
+document.addEventListener('click', (e) => {
+  const pick = e.target.closest('[data-pick]');
+  if (pick) {
+    e.stopPropagation();
+    const id = pick.dataset.pick;
+    state.picked.has(id) ? state.picked.delete(id) : state.picked.add(id);
+    renderRows(); renderSelBar();
+    return;
+  }
+  const t = e.target.closest('[data-q],[data-facet],[data-more],[data-toggle-facet],[data-unpick],[data-open],[data-tab],[data-rate],#relax,#paneClose,#clearAll,#clearAll2,#clearPick,#exportSel,#exportTop');
+  if (!t) return;
+
+  if (t.dataset.q !== undefined) { $('q').value = t.dataset.q; runSearch(t.dataset.q); }
+  else if (t.id === 'relax') { state.results = ASSETS.slice(0, 6); render(); }
+  else if (t.id === 'clearAll' || t.id === 'clearAll2') { for (const f of FACETS) state.facets[f.key].clear(); render(); }
+  else if (t.id === 'clearPick') { state.picked.clear(); renderRows(); renderSelBar(); }
+  else if (t.id === 'exportSel') { state.exportScope = 'selected'; openExport(); }
+  else if (t.id === 'exportTop') { openExport(); }
+  else if (t.dataset.toggleFacet) {
+    const k = t.dataset.toggleFacet;
+    state.closed.has(k) ? state.closed.delete(k) : state.closed.add(k);
+    renderRail();
+  }
+  else if (t.dataset.more) {
+    const k = t.dataset.more;
+    state.more.has(k) ? state.more.delete(k) : state.more.add(k);
+    renderRail();
+  }
+  else if (t.dataset.facet) {
+    const s = state.facets[t.dataset.facet];
+    s.has(t.dataset.val) ? s.delete(t.dataset.val) : s.add(t.dataset.val);
+    render();
+  }
+  else if (t.dataset.unpick) { state.facets[t.dataset.unpick].delete(t.dataset.val); render(); }
+  else if (t.dataset.open) { state.sel = t.dataset.open; state.tab = 'preview'; render(); }
+  else if (t.dataset.tab) { state.tab = t.dataset.tab; renderPane(); }
+  else if (t.dataset.rate) { state.rating = Number(t.dataset.rate); renderRating(); }
+  else if (t.id === 'paneClose') { state.sel = null; renderPane(); }
+});
+
+$('selAll').addEventListener('change', (e) => {
+  const rows = visible();
+  for (const a of rows) e.target.checked ? state.picked.add(a.assetId) : state.picked.delete(a.assetId);
+  renderRows(); renderSelBar();
+});
+
+$('form').addEventListener('submit', (e) => { e.preventDefault(); runSearch($('q').value.trim()); });
+$('sort').addEventListener('change', renderRows);
+
+$('modal').addEventListener('change', (e) => {
+  if (e.target.name === 'scope') { state.exportScope = e.target.value; renderExport(); }
+  else if (e.target.dataset.col) {
+    const k = e.target.dataset.col;
+    e.target.checked ? state.exportCols.add(k) : state.exportCols.delete(k);
+    renderExport();
+  }
+});
+$('colAll').addEventListener('click', () => { state.exportCols = new Set(EXPORT_COLS.map((c) => c.k)); renderExport(); });
+$('colNone').addEventListener('click', () => { state.exportCols = new Set(); renderExport(); });
+$('colToday').addEventListener('click', () => { state.exportCols = new Set(EXPORT_COLS.filter((c) => c.prov !== 'derived').map((c) => c.k)); renderExport(); });
+$('doExport').addEventListener('click', downloadCsv);
+$('modalX').addEventListener('click', closeExport);
+$('modalCancel').addEventListener('click', closeExport);
+$('modalScrim').addEventListener('click', closeExport);
+
+/* Arrow keys move the selection; Enter opens; Esc closes. */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'k' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('q').select(); return; }
+  if (e.key === 'Escape') { closeExport(); state.sel = null; renderPane(); closeNotes(); return; }
+  if (e.target === $('q') || e.target === $('fname')) return;
+  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+  const rows = visible();
+  if (!rows.length) return;
+  e.preventDefault();
+  const i = rows.findIndex((r) => r.assetId === state.sel);
+  const next = e.key === 'ArrowDown' ? Math.min(i + 1, rows.length - 1) : Math.max(i - 1, 0);
+  state.sel = rows[i === -1 ? 0 : next].assetId;
+  state.tab = 'preview';
+  render();
+  document.querySelector('.row.sel')?.scrollIntoView({ block: 'nearest' });
+});
+
+/* --------------------------- chrome --------------------------- */
+$('logo').addEventListener('error', () => {
+  $('logo').style.display = 'none';
+  $('logoFallback').style.display = 'grid';
+});
+$('themeBtn').addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('libra-mockup-theme', next);
+});
+function closeNotes() { $('notes').classList.remove('open'); $('scrim').classList.remove('on'); }
+$('notesBtn').addEventListener('click', () => { $('notes').classList.add('open'); $('scrim').classList.add('on'); });
+$('notesClose').addEventListener('click', closeNotes);
+$('scrim').addEventListener('click', closeNotes);
+
+const fromUrl = decodeURIComponent((location.hash.match(/q=([^&]*)/) || [])[1] || '');
+$('q').value = fromUrl || 'equipment inventory across the estate';
+runSearch($('q').value);
+</script>
+</body>
+</html>

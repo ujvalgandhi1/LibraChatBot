@@ -1,0 +1,32 @@
+{
+  "name": "libra-asset-search",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "node --test \"server/test/*.test.js\" \"client/test/*.test.js\""
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.10.0",
+    "@azure/identity": "^4.5.0",
+    "compression": "^1.7.5",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "hyparquet": "^1.28.1",
+    "hyparquet-compressors": "^1.1.1",
+    "mssql": "^12.7.0",
+    "pdfjs-dist": "^4.10.38"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^6.0.7"
+  }
+}
